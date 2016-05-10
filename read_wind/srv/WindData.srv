@@ -1,0 +1,8 @@
+int32 snapshot
+float32 x
+float32 y
+float32 z
+---
+float64 u
+float64 v
+float64 w
