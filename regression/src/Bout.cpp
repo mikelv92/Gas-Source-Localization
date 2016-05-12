@@ -29,18 +29,81 @@ int Bout::getBoutCount()
 	double ewmaSignal[MAX_NUM_SAMPLES];
 	ewma(diffSignal, ewmaSignal);
 
+	// Derivative
+	double derivative[MAX_NUM_SAMPLES];
+	convolute(ewmaSignal, diff_kernel, derivative);
 
-	//Read how many 0-1 switches are.
-	double finalSignal[MAX_NUM_SAMPLES];
-	convolute(ewmaSignal, diff_kernel, finalSignal);
-
-	for (int i = 0; i < MAX_NUM_SAMPLES; i++)
-		if (finalSignal[i] >= 0)
-			finalSignal[i] = 1;
+	// Positive part of the derivative
+	for (int i = 0; i < ELEMENT_COUNT(derivative); i++)
+		if (derivative[i] >= 0)
+			derivative[i] = 1;
 		else
-			finalSignal[i] = -1;
+			derivative[i] = 0;
 
-	int bouts = 1;
+	double sign_change[MAX_NUM_SAMPLES];
+	convolute(derivative, diff_kernel, sign_change);
+
+	// Get positive and negative indexes
+	int* pos_changes = (int*)malloc(MAX_NUM_SAMPLES * sizeof(int));
+	int* neg_changes = (int*)malloc(MAX_NUM_SAMPLES * sizeof(int));
+
+	int pos_j = 0, neg_j = 0;
+	for (int i = 0; i < ELEMENT_COUNT(sign_change); i++)
+	{
+		if (sign_change[i] > 0)
+			pos_changes[pos_j++] = i;
+		if (sign_change[i] < 0)
+			neg_changes[neg_j++] = i;
+	}
+
+	if (pos_changes[0] > neg_changes[0])
+		neg_changes += sizeof(int); //discard first negative change
+
+	int poslen = pos_j + 1; int neglen = neg_j + 1;
+	if (poslen > neglen) //lengths must be equal
+	{
+		int difference = poslen - neglen;
+		poslen -= difference;
+	}
+
+	int posneg[2][poslen];
+	for (int i = 0; i < poslen; i++)
+	{
+		posneg[0][i] = pos_changes[i];
+		posneg[1][i] = neg_changes[i];
+	}
+
+	// Get amplitudes
+	double amps[poslen];
+	for (int i = 0; i < poslen; i++)
+		amps[i] = ewmaSignal[posneg[1][i]] - ewmaSignal[posneg[0][i]];
+
+	// Filter amplitudes according to a threshold
+	int superThreshAmpIndexes[poslen];
+	int thresh_i = 0;
+	for (int i = 0; i < poslen; i++)
+		if (amps[i] > BOUT_AMP_THRESHOLD)
+			superThreshAmpIndexes[thresh_i++] = i;
+	int filteredAmpsSize = thresh_i + 1;
+
+	// Get indices of those that passed the threshold
+	int filteredAmp_posneg[2][filteredAmpsSize];
+	for (int i = 0; i < filteredAmpsSize; i++)
+	{
+		filteredAmp_posneg[0][i] = posneg[0][superThreshAmpIndexes[i]];
+		filteredAmp_posneg[1][i] = posneg[1][superThreshAmpIndexes[i]];
+	}
+
+	// Get duration of bouts
+	int duration_posneg[filteredAmpsSize];
+	for (int i = 0; i < filteredAmpsSize; i++)
+		duration_posneg[i] = filteredAmp_posneg[1][i] - filteredAmp_posneg[0][i];
+
+	// Filter durations according to a threshold
+	int bouts = 0;
+	for (int i = 0; i < filteredAmpsSize; i++)
+		if (duration_posneg[i] > BOUT_DURATION_THRESHOLD)
+			bouts++;
 
 	resetSamples();
 	return bouts;
@@ -48,8 +111,8 @@ int Bout::getBoutCount()
 
 void Bout::convolute(const double signal[], const double kernel[], double result[])
 {
-	size_t signalLen = sizeof(signal) / sizeof(signal[0]);
-	size_t kernelLen = sizeof(kernel) / sizeof(kernel[0]);
+	size_t signalLen = ELEMENT_COUNT(signal);
+	size_t kernelLen = ELEMENT_COUNT(kernel);
 
 	for (size_t n = 0; n < signalLen; n++)
 	{

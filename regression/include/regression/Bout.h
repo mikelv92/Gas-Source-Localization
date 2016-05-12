@@ -9,12 +9,17 @@
 #define REGRESSION_SRC_BOUT_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <cmath>
 
 #define SMOOTH_STD 5
 #define KERNEL_LEN 10 * SMOOTH_STD + 1 //Needs to be odd
 #define HALF_LIFE 40
 #define DELTA_TIME 1
+#define BOUT_AMP_THRESHOLD 0
+#define BOUT_DURATION_THRESHOLD 0
+
+#define ELEMENT_COUNT(X) sizeof(X) / sizeof(X[0])
 
 class Bout {
 public:
