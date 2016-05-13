@@ -23,13 +23,13 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(1);
 
-	Position currentPosition(0, 0);
+	Position currentPosition(10, 10);
 	Wind currentWind(0, 0, 0);
 	Bout bout;
 	WindAvg windAvg;
 
-	int snapshot = 1;
-	int sampleCount = 1;
+	int snapshot = 100;
+	int sampleCount = 0;
 	while (ros::ok())
 	{
 		if (sampleCount < Bout::MAX_NUM_SAMPLES)
@@ -63,9 +63,13 @@ int main(int argc, char** argv)
 				currentWind.setW((double)windSrv.response.w);
 				windAvg.addSample(currentWind);
 			}
+
+			sampleCount++;
 		}
 		else
 		{
+			sampleCount = 0;
+			printf("Bouts: %d\n", bout.getBoutCount());
 			KernelFunction kernelFunction(windAvg.getWindAverage());
 			GaussianRegression regression(kernelFunction);
 		}

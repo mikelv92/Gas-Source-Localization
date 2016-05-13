@@ -44,7 +44,7 @@ Wind WindAvg::getWindAverage()
 		v += windSamples[i].getV();
 		w += windSamples[i].getW();
 	}
-
+	resetSamples();
 	return Wind(u / size, v / size, w / size);
 
 }

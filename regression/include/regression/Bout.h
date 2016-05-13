@@ -11,34 +11,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
+#include <cstring>
 
 #define SMOOTH_STD 5
-#define KERNEL_LEN 10 * SMOOTH_STD + 1 //Needs to be odd
+#define KERNEL_LEN 11 //Needs to be odd
 #define HALF_LIFE 40
 #define DELTA_TIME 1
 #define BOUT_AMP_THRESHOLD 0
 #define BOUT_DURATION_THRESHOLD 0
 
-#define ELEMENT_COUNT(X) sizeof(X) / sizeof(X[0])
+#define ELEMENT_COUNT(X) (sizeof(X) / sizeof((X)[0]))
 
 class Bout {
 public:
-	const static int MAX_NUM_SAMPLES = 70;
+	const static int MAX_NUM_SAMPLES = 15;
 
 	Bout();
 	int getBoutCount();
 	void addSample(double sample);
 	void resetSamples();
+	~Bout();
 private:
-	double signal[MAX_NUM_SAMPLES];
+	double * signal;
 	int sampleIndex;
 
 	float kernelLen;
 
 
-	void convolute(	const double signal[], const double kernel[], double result[]);
+	void convolute(double * signal, const double kernel[]);
+	void convolute(int * signal, const int kernel[]);
 	double gaussianValue(int i);
-	void ewma(double signal[], double result[]);
+	void ewma(double * signal);
 
 };
 
