@@ -14,7 +14,7 @@
 
 class WindAvg {
 private:
-	Wind windSamples[Bout::MAX_NUM_SAMPLES];
+	Wind windSamples[Bout::SIGNAL_LEN];
 	int windIndex;
 public:
 	WindAvg();

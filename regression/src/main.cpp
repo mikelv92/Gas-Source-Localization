@@ -21,18 +21,18 @@ int main(int argc, char** argv)
 	ros::ServiceClient getSnapshotServiceClient = n.serviceClient<regression::GetSnapshot>("getSnapshot");
 	ros::ServiceClient setSnapshotServiceClient = n.serviceClient<regression::SetSnapshot>("setSnapshot");
 
-	ros::Rate loop_rate(1);
+	ros::Rate loop_rate(10);
 
-	Position currentPosition(10, 10);
+	Position currentPosition(6, 10, 2);
 	Wind currentWind(0, 0, 0);
 	Bout bout;
 	WindAvg windAvg;
 
-	int snapshot = 100;
+	int snapshot = 50;
 	int sampleCount = 0;
 	while (ros::ok())
 	{
-		if (sampleCount < Bout::MAX_NUM_SAMPLES)
+		if (sampleCount < Bout::SIGNAL_LEN)
 		{
 			msgs_and_srvs::SensorPosition2 odorSrv;
 			for (int i = 0; i < 20; i++)
@@ -45,8 +45,6 @@ int main(int argc, char** argv)
 			{
 				double odor = (double)odorSrv.response.odor_r[0];
 				bout.addSample(odor);
-
-				printf("Response odor: %f\n", odor);
 			}
 
 
@@ -68,10 +66,12 @@ int main(int argc, char** argv)
 		}
 		else
 		{
+			printf("Current position: %f, %f", currentPosition.getX(), currentPosition.getY());
 			sampleCount = 0;
 			printf("Bouts: %d\n", bout.getBoutCount());
 			KernelFunction kernelFunction(windAvg.getWindAverage());
 			GaussianRegression regression(kernelFunction);
+			currentPosition.setY(currentPosition.getY() + 1);
 		}
 
 		regression::SetSnapshot setSnapshotSrv;

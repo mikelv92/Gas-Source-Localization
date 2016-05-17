@@ -13,14 +13,14 @@ WindAvg::WindAvg() {
 
 void WindAvg::resetSamples()
 {
-	for (int i = 0; i < Bout::MAX_NUM_SAMPLES; i++)
+	for (int i = 0; i < Bout::SIGNAL_LEN; i++)
 		windSamples[0] = Wind();
 	windIndex = 0;
 }
 
 void WindAvg::addSample(Wind sample)
 {
-	if (windIndex < Bout::MAX_NUM_SAMPLES)
+	if (windIndex < Bout::SIGNAL_LEN)
 	{
 		windSamples[windIndex] = sample;
 		windIndex++;
@@ -37,7 +37,7 @@ Wind WindAvg::getWindAverage()
 	float v = 0;
 	float w = 0;
 
-	int size = Bout::MAX_NUM_SAMPLES;
+	int size = Bout::SIGNAL_LEN;
 	for (int i = 0; i < size; i++)
 	{
 		u += windSamples[i].getU();
