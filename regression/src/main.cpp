@@ -23,13 +23,22 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(10);
 
-	Position currentPosition(6, 10, 2);
+	Position currentPosition(0, 0, 3);
 	Wind currentWind(0, 0, 0);
-	Bout bout;
 	WindAvg windAvg;
 
-	int snapshot = 50;
+	int snapshot = 100;
 	int sampleCount = 0;
+
+	FILE * f = fopen("logs", "w");
+	if (f == NULL)
+	{
+		printf("Error opening log file\n");
+		exit(1);
+	}
+
+	Bout bout(f);
+
 	while (ros::ok())
 	{
 		if (sampleCount < Bout::SIGNAL_LEN)
@@ -66,19 +75,34 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			printf("Current position: %f, %f", currentPosition.getX(), currentPosition.getY());
+			printf("Current position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
+			fprintf(f, "Current position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
+
 			sampleCount = 0;
-			printf("Bouts: %d\n", bout.getBoutCount());
+			snapshot = 99;
+
+			fprintf(f, "Bouts: %d\n", bout.getBoutCount());
 			KernelFunction kernelFunction(windAvg.getWindAverage());
 			GaussianRegression regression(kernelFunction);
-			currentPosition.setY(currentPosition.getY() + 1);
+			if (currentPosition.getX() < 21)
+				currentPosition.setX(currentPosition.getX() + 1);
+			else if (currentPosition.getY() < 61){
+				currentPosition.setX(0);
+				currentPosition.setY(currentPosition.getY() + 1);
+			}
+			else
+			{
+				fclose(f);
+				ros::shutdown();
+			}
+
 		}
 
 		regression::SetSnapshot setSnapshotSrv;
-
 		snapshot++;
 		setSnapshotSrv.request.snapshot = snapshot;
 		setSnapshotServiceClient.call(setSnapshotSrv);
+
 
 		ros::spinOnce();
 		loop_rate.sleep();

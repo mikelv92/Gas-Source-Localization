@@ -7,29 +7,31 @@
 
 #include "regression/Bout.h"
 
-Bout::Bout() {
+Bout::Bout(FILE * f) {
 	sampleIndex = 0;
 	signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
 	resetSamples();
+
+	logFile = f;
 }
-void printArray(char const * name, double * array, int len)
+void Bout::printArray(char const * name, double * array, int len)
 {
-	printf("%s: ", name);
+	fprintf(logFile, "%s: ", name);
 	for (int i = 0; i < len; i++)
 	{
-		printf("%lf, ", array[i]);
+		fprintf(logFile, "%lf, ", array[i]);
 	}
-	printf("\n");
+	fprintf(logFile, "\n");
 }
 
-void printArray(char const * name, int * array, int len)
+void Bout::printArray(char const * name, int * array, int len)
 {
-	printf("%s: ", name);
+	fprintf(logFile, "%s: ", name);
 	for (int i = 0; i < len; i++)
 	{
-		printf("%d, ", array[i]);
+		fprintf(logFile, "%d, ", array[i]);
 	}
-	printf("\n");
+	fprintf(logFile, "\n");
 }
 
 int Bout::getBoutCount()
@@ -40,26 +42,26 @@ int Bout::getBoutCount()
 
 	convolute(signal, gauss_kernel, KERNEL_LEN);
 
-//	printArray("After smoothing", signal, SIGNAL_LEN);
+	printArray("After smoothing", signal, SIGNAL_LEN);
 
 	free(gauss_kernel);
 
 	// Diff
 	double diff_kernel_double[2] = { 1, -1 };
 	convolute(signal, diff_kernel_double, 2);
-//	printArray("After diff", signal, SIGNAL_LEN);
+	printArray("After diff", signal, SIGNAL_LEN);
 
 	// EWMA
 	ewma(signal);
 
-//	printArray("After ewma", signal, SIGNAL_LEN);
+	printArray("After ewma", signal, SIGNAL_LEN);
 
 	double * ewma_signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
 	memcpy(ewma_signal, signal, SIGNAL_LEN * sizeof(double));
 
 	// Derivative
 	convolute(signal, diff_kernel_double, 2);
-//	printArray("Diff after ewma", signal, SIGNAL_LEN);
+	printArray("Diff after ewma", signal, SIGNAL_LEN);
 
 
 	// Positive part of the derivative
@@ -70,12 +72,12 @@ int Bout::getBoutCount()
 		else
 			sign_change[i] = 0;
 
-//	printArray("init sign change", sign_change, SIGNAL_LEN);
+	printArray("init sign change", sign_change, SIGNAL_LEN);
 
 
 	int diff_kernel_int[2] = { 1, -1};
 	convolute(sign_change, diff_kernel_int, 2);
-//	printArray("Diff int", sign_change, SIGNAL_LEN);
+	printArray("Diff int", sign_change, SIGNAL_LEN);
 
 	// Get positive and negative indexes
 	int * pos_changes = (int*)malloc(SIGNAL_LEN * sizeof(int));
@@ -94,8 +96,8 @@ int Bout::getBoutCount()
 	int poslen = pos_j;
 	int neglen = neg_j;
 
-//	printArray("Pos changes", pos_changes, poslen);
-//	printArray("Neg changes", neg_changes, neglen);
+	printArray("Pos changes", pos_changes, poslen);
+	printArray("Neg changes", neg_changes, neglen);
 
 	int * neg_changes_2;
 	if (pos_changes[0] > neg_changes[0])
@@ -126,7 +128,7 @@ int Bout::getBoutCount()
 	for (int i = 0; i < poslen; i++)
 		amps[i] = ewma_signal[posneg[1][i]] - ewma_signal[posneg[0][i]];
 
-//	printArray("Amps", amps, poslen);
+	printArray("Amps", amps, poslen);
 
 	free(ewma_signal);
 
@@ -145,11 +147,15 @@ int Bout::getBoutCount()
 		filteredAmp_posneg[0][i] = posneg[0][superThreshAmpIndexes[i]];
 		filteredAmp_posneg[1][i] = posneg[1][superThreshAmpIndexes[i]];
 	}
+	printArray("filteredAmp_posNeg0", filteredAmp_posneg[0], filteredAmpsSize);
+	printArray("filteredAmp_posNeg1", filteredAmp_posneg[1], filteredAmpsSize);
 
 	// Get duration of bouts
 	int duration_posneg[filteredAmpsSize];
 	for (int i = 0; i < filteredAmpsSize; i++)
 		duration_posneg[i] = filteredAmp_posneg[1][i] - filteredAmp_posneg[0][i];
+
+	printArray("duration_posneg", duration_posneg, filteredAmpsSize);
 
 	// Filter durations according to a threshold
 	int bouts = 0;
