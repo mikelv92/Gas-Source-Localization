@@ -25,8 +25,8 @@ KernelFunction::KernelFunction(Wind w) {
 	sigma0Downwind[1][1] = semiMinorAxis;
 
 	//alpha is the angle of the wind direction wrt the vector [ 0 1 ]
-	float cos_alpha = (wind.getU() * 0 + wind.getV() * 1) / (wind.get2DSpeed() * 1);
-	float sin_alpha = sqrt(1 - cos_alpha * cos_alpha);
+	double cos_alpha = (wind.getU() * 0 + wind.getV() * 1) / (wind.get2DSpeed() * 1);
+	double sin_alpha = sqrt(1 - cos_alpha * cos_alpha);
 
 	rotMatrix[0][0] = cos_alpha;
 	rotMatrix[0][1] = -1 * sin_alpha;
@@ -45,24 +45,22 @@ KernelFunction::KernelFunction(Wind w) {
 
 }
 
-float KernelFunction::getK(Position pos_x, Position pos_x_prime)
+double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 {
-	float k = 0;
+	double k = 0;
 	Position diff = pos_x.diff(pos_x_prime);
-	float x = diff.getX();
-	float y = diff.getY();
-
-	//TODO Check angle of diff and the wind
+	double x = diff.getX();
+	double y = diff.getY();
 
 	if (isUpwind(diff))
 	{
 		//Upwind
-		float** invertedUpwindSigma;
+		double** invertedUpwindSigma;
 		invertedUpwindSigma = invertMatrix(sigmaUpwind);
-		float a = invertedUpwindSigma[0][0];
-		float b = invertedUpwindSigma[0][1];
-		float c = invertedUpwindSigma[1][0];
-		float d = invertedUpwindSigma[1][1];
+		double a = invertedUpwindSigma[0][0];
+		double b = invertedUpwindSigma[0][1];
+		double c = invertedUpwindSigma[1][0];
+		double d = invertedUpwindSigma[1][1];
 
 
 		k = exp(-1 * sqrt(a * x * x + (b + c) * x * y + d * y * y));
@@ -70,12 +68,12 @@ float KernelFunction::getK(Position pos_x, Position pos_x_prime)
 	else
 	{
 		//Downwind
-		float** invertedDownwindSigma;
+		double** invertedDownwindSigma;
 		invertedDownwindSigma = invertMatrix(sigmaDownwind);
-		float a = invertedDownwindSigma[0][0];
-		float b = invertedDownwindSigma[0][1];
-		float c = invertedDownwindSigma[1][0];
-		float d = invertedDownwindSigma[1][1];
+		double a = invertedDownwindSigma[0][0];
+		double b = invertedDownwindSigma[0][1];
+		double c = invertedDownwindSigma[1][0];
+		double d = invertedDownwindSigma[1][1];
 
 		k = exp(-1 * sqrt(a * x * x + (b + c) * x * y + d * y * y));
 	}
@@ -93,23 +91,20 @@ bool KernelFunction::isUpwind(Position diff)
 	return angle > M_PI / 2 || angle < -1 * M_PI / 2;
 }
 
-float** KernelFunction::invertMatrix(float matrix[2][2])
+double** KernelFunction::invertMatrix(double matrix[2][2])
 {
-	float a = matrix[0][0];
-	float b = matrix[0][1];
-	float c = matrix[1][0];
-	float d = matrix[1][1];
+	double a = matrix[0][0];
+	double b = matrix[0][1];
+	double c = matrix[1][0];
+	double d = matrix[1][1];
 
-	float denom = 1 / (a * d - b * c);
-	float** inverted_matrix;
+	double denom = 1 / (a * d - b * c);
+	double** inverted_matrix;
 
 	inverted_matrix[0][0] = d / denom;
 	inverted_matrix[0][1] = -1 * b / denom;
 	inverted_matrix[1][0] = -1 * c / denom;
 	inverted_matrix[1][1] = a / denom;
 	return inverted_matrix;
-}
-
-KernelFunction::~KernelFunction() {
 }
 

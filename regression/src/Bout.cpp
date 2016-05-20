@@ -36,9 +36,11 @@ void Bout::printArray(char const * name, int * array, int len)
 
 int Bout::getBoutCount()
 {
+	//printArray("Init signal", signal, SIGNAL_LEN);
 	// Smooth
 	double * gauss_kernel = (double*)malloc(KERNEL_LEN * sizeof(double));
 	populateGaussianFilter(gauss_kernel);
+	//printArray("Gauss kernel", gauss_kernel, KERNEL_LEN);
 
 	convolute(signal, gauss_kernel, KERNEL_LEN);
 
@@ -133,10 +135,12 @@ int Bout::getBoutCount()
 	free(ewma_signal);
 
 	// Filter amplitudes according to a threshold
+	double amp_threshold = computeAmpThreshold(amps, poslen);
+	printf("Amp thesh: %lf\n", amp_threshold);
 	int superThreshAmpIndexes[poslen];
 	int thresh_i = 0;
 	for (int i = 0; i < poslen; i++)
-		if (amps[i] > BOUT_AMP_THRESHOLD)
+		if (amps[i] > amp_threshold)
 			superThreshAmpIndexes[thresh_i++] = i;
 	int filteredAmpsSize = thresh_i;
 
@@ -255,6 +259,19 @@ void Bout::ewma(double * sig)
 	memcpy(sig, result, SIGNAL_LEN * sizeof(double));
 	free(result);
 
+}
+
+double Bout::computeAmpThreshold(double * amps, int len)
+{
+	double mean = 0.0, std = 0.0;
+	for (int i = 0; i < len; i++)
+		mean += amps[i];
+	mean /= len;
+
+	for (int i = 0; i < len; i++)
+		std += (amps[i] - mean) * (amps[i] - mean);
+	std /= len;
+	return mean * 3 * sqrt(std);
 }
 
 void Bout::resetSamples()

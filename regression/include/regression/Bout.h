@@ -14,7 +14,7 @@
 #include <cstring>
 
 #define SMOOTH_STD 5
-#define KERNEL_LEN 10 * SMOOTH_STD //Needs to be even
+#define KERNEL_LEN 4 * SMOOTH_STD //Needs to be even
 #define HALF_LIFE 40
 #define DELTA_TIME 1
 #define BOUT_AMP_THRESHOLD 0
@@ -22,7 +22,7 @@
 
 class Bout {
 public:
-	const static int SIGNAL_LEN = 300;
+	const static int SIGNAL_LEN = 100;
 
 	Bout(FILE * f);
 	int getBoutCount();
@@ -42,6 +42,7 @@ private:
 	void convolute(int * signal, const int kernel[], int kernelLen);
 	void populateGaussianFilter(double * kernel);
 	void ewma(double * signal);
+	double computeAmpThreshold(double * amps, int len);
 	void printArray(char const * name, double * array, int len);
 	void printArray(char const * name, int * array, int len);
 

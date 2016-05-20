@@ -19,27 +19,26 @@ class KernelFunction {
 private:
 	Wind wind;
 
-	float semiMajorAxis;
-	float semiMinorAxis;
+	double semiMajorAxis;
+	double semiMinorAxis;
 
-	float sigma0Upwind[2][2];
-	float sigma0Downwind[2][2];
+	double sigma0Upwind[2][2];
+	double sigma0Downwind[2][2];
 
-	float rotMatrix[2][2];
+	double rotMatrix[2][2];
 
-	float sigmaUpwind[2][2];
-	float sigmaDownwind[2][2];
+	double sigmaUpwind[2][2];
+	double sigmaDownwind[2][2];
 
-	float** invertMatrix(float matrix[2][2]);
+	double** invertMatrix(double matrix[2][2]);
 	bool isUpwind(Position diff);
 
 public:
 	KernelFunction() {}
 	KernelFunction(Wind w);
 
-	float getK(Position x, Position x_prime);
+	double getK(Position x, Position x_prime);
 
-	virtual ~KernelFunction();
 };
 
 #endif /* REGRESSION_SRC_KERNELFUNCTION_H_ */
