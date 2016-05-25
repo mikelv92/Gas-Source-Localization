@@ -12,6 +12,8 @@
 #define REDUCE_FACTOR 10
 
 #include <cmath>
+#include <stdio.h>
+#include <cstdlib>
 #include "regression/Wind.h"
 #include "regression/Position.h"
 
@@ -27,17 +29,17 @@ private:
 
 	double rotMatrix[2][2];
 
-	double sigmaUpwind[2][2];
-	double sigmaDownwind[2][2];
+	double ** sigmaUpwind;
+	double ** sigmaDownwind;
 
-	double** invertMatrix(double matrix[2][2]);
+	void invertMatrix(double ** matrix);
 	bool isUpwind(Position diff);
 
 public:
-	KernelFunction() {}
 	KernelFunction(Wind w);
 
 	double getK(Position x, Position x_prime);
+	~KernelFunction();
 
 };
 

@@ -21,7 +21,7 @@ public:
 	void resetSamples();
 	Wind getWindAverage();
 	void addSample(Wind sample);
-	virtual ~WindAvg();
+	~WindAvg();
 };
 
 #endif /* REGRESSION_SRC_WINDAVG_H_ */

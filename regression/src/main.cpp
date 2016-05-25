@@ -1,7 +1,6 @@
 #include "ros/ros.h"
 
 #include "regression/Wind.h"
-#include "regression/KernelFunction.h"
 #include "regression/Position.h"
 #include "regression/Bout.h"
 #include "regression/WindAvg.h"
@@ -23,7 +22,7 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(10);
 
-	Position currentPosition(5, 11, 3);
+	Position currentPosition(7, 12, 3);
 	Wind currentWind(0, 0, 0);
 	WindAvg windAvg;
 
@@ -38,11 +37,12 @@ int main(int argc, char** argv)
 	}
 
 	Bout bout(f);
+	GaussianRegression regression;
 
 	while (ros::ok())
 	{
-		regression::SetSnapshot setSnapshotSrv;
 		snapshot++;
+		regression::SetSnapshot setSnapshotSrv;
 		setSnapshotSrv.request.snapshot = snapshot;
 		setSnapshotServiceClient.call(setSnapshotSrv);
 
@@ -80,33 +80,31 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			printf("Current position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
-			fprintf(f, "Current position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
 
 			sampleCount = 0;
 			snapshot = 99;
 
-			fprintf(f, "Bouts: %d\n", bout.getBoutCount());
-			KernelFunction kernelFunction(windAvg.getWindAverage());
-			GaussianRegression regression(kernelFunction);
-			if (currentPosition.getX() < 11)
-				currentPosition.setX(currentPosition.getX() + 1);
-			else if (currentPosition.getY() < 15){
-				currentPosition.setX(5);
-				currentPosition.setY(currentPosition.getY() + 1);
-			}
-			else
-			{
-				fclose(f);
-				ros::shutdown();
-			}
+			int bouts = bout.getBoutCount();
+
+			printf("Bouts: %d\n", bouts);
+			fprintf(f, "Bouts: %d\n", bouts);
+
+			Wind windavg = windAvg.getWindAverage();
+			printf("Wind: (%f, %f) speed: %f\n", windavg.getU(), windavg.getV(), windavg.get2DSpeed());
+			KernelFunction kernel(windavg);
+			regression.setKernel(&kernel);
+			regression.addMeasurement(currentPosition, bouts);
+			currentPosition = regression.nextBestPosition();
+			printf("New position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
+			fprintf(f, "New position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
 
 		}
-
 
 
 		ros::spinOnce();
 		loop_rate.sleep();
 
 	}
+	if (f) fclose(f);
+
 }

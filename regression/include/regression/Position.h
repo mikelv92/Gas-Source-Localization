@@ -44,6 +44,18 @@ public:
 	{
 		return Position(this->getX() - pos.getX(), this->getY() - pos.getY());
 	}
+
+	bool equals(Position pos)
+	{
+		return this->x == pos.getX() && this->y == pos.getY() && this->z == pos.getZ();
+	}
+
+	inline bool operator<(const Position & pos) const
+	{
+		return this->getX() < pos.getX() ||
+				(this->getX() == pos.getX() && this->getY() < pos.getY()) ||
+				(this->getX() == pos.getX() && this->getY() == pos.getY() && this->getZ() < pos.getZ());
+	}
 };
 
 #endif /* REGRESSION_SRC_POSITION_H_ */

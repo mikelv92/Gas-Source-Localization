@@ -8,13 +8,14 @@
 #include "regression/WindAvg.h"
 
 WindAvg::WindAvg() {
+	windIndex = 0;
 	resetSamples();
 }
 
 void WindAvg::resetSamples()
 {
 	for (int i = 0; i < Bout::SIGNAL_LEN; i++)
-		windSamples[0] = Wind();
+		windSamples[i] = Wind(0, 0, 0);
 	windIndex = 0;
 }
 
@@ -33,9 +34,9 @@ void WindAvg::addSample(Wind sample)
 
 Wind WindAvg::getWindAverage()
 {
-	float u = 0;
-	float v = 0;
-	float w = 0;
+	double u = 0;
+	double v = 0;
+	double w = 0;
 
 	int size = Bout::SIGNAL_LEN;
 	for (int i = 0; i < size; i++)
@@ -44,12 +45,15 @@ Wind WindAvg::getWindAverage()
 		v += windSamples[i].getV();
 		w += windSamples[i].getW();
 	}
+
 	resetSamples();
-	return Wind(u / size, v / size, w / size);
+	Wind windavg(u / size, v / size, w / size);
+	return windavg;
 
 }
 
 WindAvg::~WindAvg() {
-	// TODO Auto-generated destructor stub
+	if (windSamples)
+		free(windSamples);
 }
 
