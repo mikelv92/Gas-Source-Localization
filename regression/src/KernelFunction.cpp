@@ -25,7 +25,7 @@ KernelFunction::KernelFunction(Wind w) {
 
 	//alpha is the angle of the wind direction wrt the vector [ 0 1 ]
 	double cos_alpha = (wind.getU() * 0 + wind.getV() * 1) / (wind.get2DSpeed() * 1);
-	double sin_alpha = sqrt(1 - cos_alpha * cos_alpha);
+	double sin_alpha = sqrt(1 - cos_alpha * cos_alpha); //TODO get the proper sin
 
 	rotMatrix[0][0] = cos_alpha;
 	rotMatrix[0][1] = -1 * sin_alpha;

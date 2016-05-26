@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(10);
 
-	Position currentPosition(7, 12, 3);
+	Position currentPosition(3, 4, 3);
 	Wind currentWind(0, 0, 0);
 	WindAvg windAvg;
 
@@ -48,20 +48,6 @@ int main(int argc, char** argv)
 
 		if (sampleCount < Bout::SIGNAL_LEN)
 		{
-			msgs_and_srvs::SensorPosition2 odorSrv;
-			for (int i = 0; i < 20; i++)
-			{
-				odorSrv.request.x[i] = currentPosition.getX();
-				odorSrv.request.y[i] = currentPosition.getY();
-				odorSrv.request.z[i] = currentPosition.getZ();
-			}
-			if (odorServiceClient.call(odorSrv))
-			{
-				double odor = (double)odorSrv.response.odor_r[0];
-				bout.addSample(odor);
-			}
-
-
 			read_wind::WindData windSrv;
 			windSrv.request.snapshot = snapshot;
 			windSrv.request.x = currentPosition.getX();
@@ -74,6 +60,20 @@ int main(int argc, char** argv)
 				currentWind.setV((double)windSrv.response.v);
 				currentWind.setW((double)windSrv.response.w);
 				windAvg.addSample(currentWind);
+			}
+
+
+			msgs_and_srvs::SensorPosition2 odorSrv;
+			for (int i = 0; i < 20; i++)
+			{
+				odorSrv.request.x[i] = currentPosition.getX();
+				odorSrv.request.y[i] = currentPosition.getY();
+				odorSrv.request.z[i] = currentPosition.getZ();
+			}
+			if (odorServiceClient.call(odorSrv))
+			{
+				double odor = (double)odorSrv.response.odor_r[0];
+				bout.addSample(odor);
 			}
 
 			sampleCount++;
@@ -90,11 +90,18 @@ int main(int argc, char** argv)
 			fprintf(f, "Bouts: %d\n", bouts);
 
 			Wind windavg = windAvg.getWindAverage();
+			if (windavg.get2DSpeed() == 0)
+			{
+				windavg.setU(2);
+				windavg.setV(1);
+				windavg.set2DSpeed(sqrt(5));
+			}
 			printf("Wind: (%f, %f) speed: %f\n", windavg.getU(), windavg.getV(), windavg.get2DSpeed());
 			KernelFunction kernel(windavg);
 			regression.setKernel(&kernel);
 			regression.addMeasurement(currentPosition, bouts);
 			currentPosition = regression.nextBestPosition();
+			regression.writeMeanMap(f);
 			printf("New position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
 			fprintf(f, "New position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
 

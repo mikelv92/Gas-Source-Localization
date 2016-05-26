@@ -97,7 +97,7 @@ Position GaussianRegression::nextBestPosition()
 
 	printf("Max mean: %f, %f: %lf\n", maxMeanPos.getX(), maxMeanPos.getY(), maxMean);
 
-	Position maxVariancePos(0, 0, 3);
+	Position maxVariancePos = varianceMap.begin()->first;
 	double maxVariance = 0;
 
 	for (map<Position, double>::iterator it = varianceMap.begin(); it != varianceMap.end(); it++)
@@ -136,4 +136,30 @@ void GaussianRegression::addElementToVector(RowVectorXd * vector, double element
 	VectorXd vec(1);
 	vec << element;
 	vector->col(vector->cols() - 1) = vec;
+}
+
+void GaussianRegression::writeMeanMap(FILE * logFile)
+{
+	printf("Mean map\n");
+
+	for (float i = 0; i < ENV_X; i += STEP_SIZE)
+	{
+		for (float j = 0; j < ENV_Y; j += STEP_SIZE)
+		{
+			Position x(i, j, 3);
+			if (!isExplored(x))
+				printf("%lf ", mean(x));
+			else
+			{
+				int index = 0;
+				for (list<Position>::iterator x_it = X.begin(); x_it != X.end(); x_it++)
+				{
+					if (x.equals(*x_it))
+						printf("%lf ", y.row(index)(0));
+					index++;
+				}
+			}
+		}
+		printf("\n");
+	}
 }

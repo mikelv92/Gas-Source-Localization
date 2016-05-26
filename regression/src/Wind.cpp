@@ -22,7 +22,3 @@ Wind::Wind()
 	this->w = 0;
 	this->speed2D = 0;
 }
-
-Wind::~Wind() {
-	// TODO Auto-generated destructor stub
-}

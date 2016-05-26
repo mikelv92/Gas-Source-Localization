@@ -20,10 +20,14 @@ private:
 public:
 	Wind();
 	Wind(double u, double v, double w);
-	virtual ~Wind();
 
 	double get2DSpeed() const {
 		return speed2D;
+	}
+
+	void set2DSpeed(double speed)
+	{
+		this->speed2D = speed;
 	}
 
 	double getU() const {

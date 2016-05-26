@@ -14,10 +14,10 @@
 #include <list>
 #include <map>
 
-#define SIGMA_N 5;
-#define ENV_X 61
-#define ENV_Y 21
-#define STEP_SIZE 1
+#define SIGMA_N 2;
+#define ENV_X 11
+#define ENV_Y 6
+#define STEP_SIZE 0.5
 #define A_K 100
 
 using namespace Eigen;
@@ -42,6 +42,7 @@ public:
 	void addMeasurement(Position x_prime, int boutCount);
 	Position nextBestPosition();
 	void setKernel(KernelFunction * kernelFunction);
+	void writeMeanMap(FILE * logFile);
 };
 
 #endif /* REGRESSION_SRC_GAUSSIANREGRESSION_H_ */
