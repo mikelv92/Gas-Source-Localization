@@ -7,9 +7,8 @@
 
 #ifndef REGRESSION_SRC_KERNELFUNCTION_H_
 #define REGRESSION_SRC_KERNELFUNCTION_H_
-#define SPATIAL_SCALE 0.5
-#define WIND_SCALE 0.5
-#define REDUCE_FACTOR 10
+#define SPATIAL_SCALE 1.2
+#define WIND_SCALE 0.2
 
 #include <cmath>
 #include <stdio.h>

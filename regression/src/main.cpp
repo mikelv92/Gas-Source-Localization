@@ -22,7 +22,8 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(10);
 
-	Position currentPosition(3, 4, 3);
+	Position currentPosition(5, 3, 3);
+	printf("Initial position: %lf %lf\n", currentPosition.getX(), currentPosition.getY());
 	Wind currentWind(0, 0, 0);
 	WindAvg windAvg;
 
@@ -90,18 +91,14 @@ int main(int argc, char** argv)
 			fprintf(f, "Bouts: %d\n", bouts);
 
 			Wind windavg = windAvg.getWindAverage();
-			if (windavg.get2DSpeed() == 0)
-			{
-				windavg.setU(2);
-				windavg.setV(1);
-				windavg.set2DSpeed(sqrt(5));
-			}
 			printf("Wind: (%f, %f) speed: %f\n", windavg.getU(), windavg.getV(), windavg.get2DSpeed());
 			KernelFunction kernel(windavg);
 			regression.setKernel(&kernel);
 			regression.addMeasurement(currentPosition, bouts);
 			currentPosition = regression.nextBestPosition();
+
 			regression.writeMeanMap(f);
+
 			printf("New position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
 			fprintf(f, "New position: %f, %f\n", currentPosition.getX(), currentPosition.getY());
 

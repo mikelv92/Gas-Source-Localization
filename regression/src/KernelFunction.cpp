@@ -25,7 +25,7 @@ KernelFunction::KernelFunction(Wind w) {
 
 	//alpha is the angle of the wind direction wrt the vector [ 0 1 ]
 	double cos_alpha = (wind.getU() * 0 + wind.getV() * 1) / (wind.get2DSpeed() * 1);
-	double sin_alpha = sqrt(1 - cos_alpha * cos_alpha); //TODO get the proper sin
+	double sin_alpha = sqrt(1 - cos_alpha * cos_alpha);
 
 	rotMatrix[0][0] = cos_alpha;
 	rotMatrix[0][1] = -1 * sin_alpha;
@@ -48,10 +48,10 @@ KernelFunction::KernelFunction(Wind w) {
 	sigmaDownwind[1] = (double *)malloc(2 * sizeof(double));
 
 
-	sigmaDownwind[0][0] = semiMajorAxis / REDUCE_FACTOR * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
-	sigmaDownwind[0][1] = semiMajorAxis / REDUCE_FACTOR * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaDownwind[1][0] = semiMajorAxis / REDUCE_FACTOR * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaDownwind[1][1] = semiMinorAxis / REDUCE_FACTOR * cos_alpha * cos_alpha + semiMajorAxis * sin_alpha * sin_alpha;
+	sigmaDownwind[0][0] = 1 / semiMajorAxis * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
+	sigmaDownwind[0][1] = 1 / semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
+	sigmaDownwind[1][0] = 1 / semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
+	sigmaDownwind[1][1] = 1 / semiMinorAxis * cos_alpha * cos_alpha + semiMajorAxis * sin_alpha * sin_alpha;
 
 	invertMatrix(sigmaDownwind);
 
@@ -75,8 +75,6 @@ double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 	}
 	else
 	{
-
-		//TODO a and b are gone for some reason
 		//Downwind
 		a = sigmaDownwind[0][0];
 		b = sigmaDownwind[0][1];

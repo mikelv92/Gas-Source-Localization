@@ -16,12 +16,10 @@ void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
 {
 	X.push_back(x_prime);
 
-	y.conservativeResize(y.rows() + 1);
 	addElementToVector(&y, boutCount);
 
-	int datasetSize = X.size();
-	VectorXd cv(datasetSize);
-	RowVectorXd rv(datasetSize);
+	VectorXd cv;
+	RowVectorXd rv;
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 	{
 		addElementToVector(&cv, kernel->getK(*x, x_prime));
@@ -31,14 +29,13 @@ void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
 	K.conservativeResize(K.rows() + 1, K.cols() + 1);
 	K.row(K.rows() - 1) = rv;
 	K.col(K.cols() - 1) = cv;
-
 }
 
 double GaussianRegression::mean(Position x_star)
 {
 	int datasetSize = X.size();
 
-	RowVectorXd k_x_xstar(datasetSize);
+	RowVectorXd k_x_xstar;
 
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 		addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
@@ -60,7 +57,7 @@ double GaussianRegression::variance(Position x_star)
 	I_n *= SIGMA_N;
 	MatrixXd v = K + I_n;
 
-	RowVectorXd k_x_xstar(datasetSize);
+	RowVectorXd k_x_xstar;
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 		addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
 
@@ -126,6 +123,7 @@ void GaussianRegression::setKernel(KernelFunction * kernelFunction)
 
 void GaussianRegression::addElementToVector(VectorXd * vector, double element)
 {
+	vector->conservativeResize(vector->rows() + 1);
 	RowVectorXd vec(1);
 	vec << element;
 	vector->row(vector->rows() - 1) = vec;
@@ -133,6 +131,7 @@ void GaussianRegression::addElementToVector(VectorXd * vector, double element)
 
 void GaussianRegression::addElementToVector(RowVectorXd * vector, double element)
 {
+	vector->conservativeResize(vector->cols() + 1);
 	VectorXd vec(1);
 	vec << element;
 	vector->col(vector->cols() - 1) = vec;

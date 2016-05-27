@@ -15,8 +15,8 @@
 #include <map>
 
 #define SIGMA_N 2;
-#define ENV_X 11
-#define ENV_Y 6
+#define ENV_X 10
+#define ENV_Y 5
 #define STEP_SIZE 0.5
 #define A_K 100
 

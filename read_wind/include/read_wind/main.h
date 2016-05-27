@@ -19,19 +19,19 @@ extern "C" {
 #include <sys/stat.h>
 
 
-#define DEFAULT_SNAPSHOTS					1000
+#define DEFAULT_SNAPSHOTS					300
 
-#define DEFAULT_SOURCE_POS_X				5
-#define DEFAULT_SOURCE_POS_Y				10
-#define DEFAULT_SOURCE_POS_Z				0.1
+#define DEFAULT_SOURCE_POS_X				2
+#define DEFAULT_SOURCE_POS_Y				2
+#define DEFAULT_SOURCE_POS_Z				3
 
 
-#define	DEFAULT_AREA_X						61
-#define	DEFAULT_AREA_Y						21
-#define	DEFAULT_AREA_Z						6
+#define	DEFAULT_AREA_X						11
+#define	DEFAULT_AREA_Y						6
+#define	DEFAULT_AREA_Z						4
 #define	DEFAULT_AREA_CELL_SIZE				0.5
 
-#define	DEFAULT_WIND_DATA					"/home/mikel/catkin_ws/data/windData/original/t600s_030."
+#define	DEFAULT_WIND_DATA					"/home/mikel/catkin_ws/data/windData/small_simple/small_simple0."
 
 #define	NODE_NAME 							"read_wind_server"
 
