@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(10);
 
-	Position currentPosition(5, 3, 3);
+	Position currentPosition(2.5, 2.5, 3);
 	printf("Initial position: %lf %lf\n", currentPosition.getX(), currentPosition.getY());
 	Wind currentWind(0, 0, 0);
 	WindAvg windAvg;
@@ -36,6 +36,9 @@ int main(int argc, char** argv)
 		printf("Error opening log file\n");
 		exit(1);
 	}
+
+	map<Position, int> boutMap;
+	map<Position, Wind> windMap;
 
 	Bout bout(f);
 	GaussianRegression regression;
@@ -86,12 +89,88 @@ int main(int argc, char** argv)
 			snapshot = 99;
 
 			int bouts = bout.getBoutCount();
+			boutMap[currentPosition] = bouts;
 
 			printf("Bouts: %d\n", bouts);
 			fprintf(f, "Bouts: %d\n", bouts);
 
 			Wind windavg = windAvg.getWindAverage();
+			windMap[currentPosition] = windavg;
+			windavg.setU(0);
+			windavg.setV(-10);
+			windavg.set2DSpeed(10);
 			printf("Wind: (%f, %f) speed: %f\n", windavg.getU(), windavg.getV(), windavg.get2DSpeed());
+
+//			if (currentPosition.getX() < 40)
+//			{
+//				if (currentPosition.getY() < 15)
+//					currentPosition.setY(currentPosition.getY() + 0.5);
+//				else
+//				{
+//					currentPosition.setY(0);
+//					currentPosition.setX(currentPosition.getX() + 0.5);
+//				}
+//			}
+//			else
+//			{
+//				//print
+//
+//				FILE * boutLogs = fopen("bout_logs", "w");
+//				if (boutLogs == NULL)
+//				{
+//					printf("Error opening bout log file\n");
+//					exit(1);
+//				}
+//				FILE * windLogs = fopen("wind_logs", "w");
+//				if (windLogs == NULL)
+//				{
+//					printf("Error opening wind log file\n");
+//					exit(1);
+//				}
+//
+//
+//				int count = 0;
+//				for (map<Position, int>::iterator it = boutMap.begin(); it != boutMap.end(); it++)
+//				{
+//					if (count < 80)
+//					{
+//						fprintf(boutLogs, "%d\t", it->second);
+//						count++;
+//					}
+//					else
+//					{
+//						fprintf(boutLogs, "\n");
+//						count = 0;
+//					}
+//				}
+//				fprintf(boutLogs, "\n");
+//				for (map<Position, int>::iterator it = boutMap.begin(); it != boutMap.end(); it++)
+//					fprintf(boutLogs,"%f, %f\n", it->first.getX(), it->first.getY());
+//
+//				count = 0;
+//				for (map<Position, Wind>::iterator it = windMap.begin(); it != windMap.end(); it++)
+//				{
+//					if (count < 80)
+//					{
+//						fprintf(windLogs, "(%lf, %lf)\t ", it->second.getU(), it->second.getV());
+//						count++;
+//					}
+//					else
+//					{
+//						fprintf(windLogs, "\n");
+//						count = 0;
+//					}
+//				}
+//
+//				if (f) fclose(f);
+//				if (boutLogs) fclose(boutLogs);
+//				if (windLogs) fclose(windLogs);
+//
+//
+//
+//				ros::shutdown();
+//			}
+
 			KernelFunction kernel(windavg);
 			regression.setKernel(&kernel);
 			regression.addMeasurement(currentPosition, bouts);
@@ -109,6 +188,5 @@ int main(int argc, char** argv)
 		loop_rate.sleep();
 
 	}
-	if (f) fclose(f);
 
 }

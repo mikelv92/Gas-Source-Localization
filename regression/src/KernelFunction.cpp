@@ -37,8 +37,8 @@ KernelFunction::KernelFunction(Wind w) {
 	sigmaUpwind[1] = (double *)malloc(2 * sizeof(double));
 
 	sigmaUpwind[0][0] = semiMajorAxis * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
-	sigmaUpwind[0][1] = semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaUpwind[1][0] = semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
+	sigmaUpwind[0][1] = semiMinorAxis * cos_alpha * sin_alpha - semiMajorAxis * cos_alpha * sin_alpha;
+	sigmaUpwind[1][0] = semiMinorAxis * cos_alpha * sin_alpha - semiMajorAxis * cos_alpha * sin_alpha;
 	sigmaUpwind[1][1] = semiMinorAxis * cos_alpha * cos_alpha + semiMajorAxis * sin_alpha * sin_alpha;
 
 	invertMatrix(sigmaUpwind);
@@ -49,9 +49,9 @@ KernelFunction::KernelFunction(Wind w) {
 
 
 	sigmaDownwind[0][0] = 1 / semiMajorAxis * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
-	sigmaDownwind[0][1] = 1 / semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaDownwind[1][0] = 1 / semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaDownwind[1][1] = 1 / semiMinorAxis * cos_alpha * cos_alpha + semiMajorAxis * sin_alpha * sin_alpha;
+	sigmaDownwind[0][1] = semiMinorAxis * cos_alpha * sin_alpha - 1 / semiMajorAxis * cos_alpha * sin_alpha;
+	sigmaDownwind[1][0] = semiMinorAxis * cos_alpha * sin_alpha - 1 / semiMajorAxis * cos_alpha * sin_alpha;
+	sigmaDownwind[1][1] = semiMinorAxis * cos_alpha * cos_alpha + 1 / semiMajorAxis * sin_alpha * sin_alpha;
 
 	invertMatrix(sigmaDownwind);
 
