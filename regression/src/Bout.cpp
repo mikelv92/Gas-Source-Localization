@@ -246,7 +246,7 @@ void Bout::ewma(double * sig)
 
 	double y_t_old = 0;
 	double x_t = 0, x_t_old = 0;
-	double alpha = 1 - exp(log(1 / (2 * HALF_LIFE * DELTA_TIME)));
+	double alpha = 1 - exp(log(0.5) / (HALF_LIFE * DELTA_TIME));
 
 	for (int i = 0; i < SIGNAL_LEN; i++)
 	{

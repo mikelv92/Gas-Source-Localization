@@ -13,8 +13,8 @@
 #include <cmath>
 #include <cstring>
 
-#define SMOOTH_STD 5
-#define KERNEL_LEN 4 * SMOOTH_STD //Needs to be even
+#define SMOOTH_STD 30 //In python it's 30. Check how it works with pandas.rolling_window
+#define KERNEL_LEN 2 * SMOOTH_STD //Needs to be even
 #define HALF_LIFE 40
 #define DELTA_TIME 1
 #define BOUT_AMP_THRESHOLD 0
