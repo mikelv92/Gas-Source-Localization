@@ -188,7 +188,15 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(regression src/main.cpp src/Wind.cpp src/KernelFunction.cpp src/WindAvg.cpp src/Bout.cpp src/GaussianRegression.cpp)
+add_executable(regression 
+				src/main.cpp 
+				src/Wind.cpp 
+				src/KernelFunction.cpp 
+				src/WindAvg.cpp 
+				src/Bout.cpp 
+				src/GaussianRegression.cpp
+				src/DataHandler.cpp
+				)
 target_link_libraries(regression ${catkin_LIBRARIES})
 add_dependencies(regression regression_generate_messages_cpp)
 

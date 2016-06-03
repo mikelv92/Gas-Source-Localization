@@ -294,6 +294,10 @@ void Bout::addSample(double sample)
 	}
 }
 
+bool Bout::isSignalArrayFull()
+{
+	return sampleIndex >= SIGNAL_LEN;
+}
 
 
 Bout::~Bout()
