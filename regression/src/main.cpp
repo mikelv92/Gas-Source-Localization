@@ -26,11 +26,13 @@ int main(int argc, char** argv)
 	DataHandler datahandler(&bout);
 
 	ros::Subscriber pid_sub = n.subscribe("/pid_node/ppm", 1000, &DataHandler::pid_callback, &datahandler);
+	ros::Subscriber e_nose_sub = n.subscribe("/e_nose_data", 1000, &DataHandler::e_nose_callback, &datahandler);
 
-	while (ros::ok())
-	{
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
+//	while (ros::ok())
+//	{
+//		ros::spinOnce();
+//		loop_rate.sleep();
+//	}
 
+	ros::spin();
 }

@@ -8,9 +8,15 @@
 #include "regression/Bout.h"
 
 Bout::Bout(FILE * f) {
-	sampleIndex = 0;
-	signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
-	resetSamples();
+	for (int i = PID; i != NUM_SIGNALS; i++)
+	{
+		SignalIndex index = static_cast<SignalIndex>(i);
+
+		sampleIndexes[i] = 0;
+		double * signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
+		signalsMap[index] = signal;
+		resetSamples(index);
+	}
 
 	logFile = f;
 }
@@ -34,8 +40,10 @@ void Bout::printArray(char const * name, int * array, int len)
 	fprintf(logFile, "\n");
 }
 
-int Bout::getBoutCount()
+int Bout::getBoutCount(SignalIndex signalIndex)
 {
+	double * signal = signalsMap.find(signalIndex)->second;
+
 	//printArray("Init signal", signal, SIGNAL_LEN);
 	// Smooth
 	double * gauss_kernel = (double*)malloc(KERNEL_LEN * sizeof(double));
@@ -167,7 +175,7 @@ int Bout::getBoutCount()
 		if (duration_posneg[i] > BOUT_DURATION_THRESHOLD)
 			bouts++;
 
-	resetSamples();
+	resetSamples(signalIndex);
 
 
 	return bouts;
@@ -274,19 +282,24 @@ double Bout::computeAmpThreshold(double * amps, int len)
 	return mean * 3 * sqrt(std);
 }
 
-void Bout::resetSamples()
+void Bout::resetSamples(SignalIndex signalIndex)
 {
+	map<SignalIndex, double *>::iterator it = signalsMap.find(signalIndex);
+
 	for (int i = 0; i < SIGNAL_LEN; i++)
-		signal[i] = 0;
-	sampleIndex = 0;
+		it->second[i] = 0;
+
+	sampleIndexes[it->first] = 0;
 }
 
-void Bout::addSample(double sample)
+void Bout::addSample(SignalIndex signalIndex, double sample)
 {
-	if (sampleIndex < SIGNAL_LEN)
+	if (sampleIndexes[signalIndex] < SIGNAL_LEN)
 	{
-		signal[sampleIndex] = sample;
-		sampleIndex++;
+		map<SignalIndex, double *>::iterator it = signalsMap.find(signalIndex);
+
+		it->second[sampleIndexes[signalIndex]] = sample;
+		sampleIndexes[signalIndex]++;
 	}
 	else
 	{
@@ -294,14 +307,17 @@ void Bout::addSample(double sample)
 	}
 }
 
-bool Bout::isSignalArrayFull()
+bool Bout::isSignalArrayFull(SignalIndex signalIndex)
 {
-	return sampleIndex >= SIGNAL_LEN;
+	return sampleIndexes[signalIndex] >= SIGNAL_LEN;
 }
 
 
 Bout::~Bout()
 {
-	if (signal)
-		free(signal);
+	for (map<SignalIndex, double *>::iterator it = signalsMap.begin(); it != signalsMap.end(); it++)
+	{
+		if (it->second)
+			free(it->second);
+	}
 }
