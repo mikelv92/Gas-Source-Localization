@@ -1,0 +1,14 @@
+uint64 timestamp
+uint8 s1
+uint8 s2
+uint8 s3
+uint8 s4
+uint8 s5
+uint8 s6
+uint8 rload_1
+uint8 rload_2
+uint8 rload_3
+uint8 rload_4
+uint8 rload_5
+uint8 rload_6
+uint8 voltage

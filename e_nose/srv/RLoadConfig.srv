@@ -1,0 +1,5 @@
+uint8 rload_id
+uint8 value
+---
+bool result
+string details
