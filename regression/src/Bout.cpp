@@ -183,30 +183,38 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 
 void Bout::convolute(double * sig, const double kernel[], int kernelLen)
 {
+	int halfKernelLen = kernelLen / 2;
 	double * result = (double *)malloc(SIGNAL_LEN * sizeof(double));
 
-	for (int i = 0; i < SIGNAL_LEN; i++)
-		result[i] = 0;
-
 	for (int n = 0; n < SIGNAL_LEN; n++)
-		for (int k = 0; k < SIGNAL_LEN; k++)
-			result[n] += (k < SIGNAL_LEN ? sig[k] : 0) * (n - k < kernelLen ? kernel[n - k] : 0);
+	{
+		result[n] = 0;
 
+		int k_min = (n < halfKernelLen ? 0 : n - halfKernelLen );
+		int k_max = (n < SIGNAL_LEN - halfKernelLen ? n + halfKernelLen : n + SIGNAL_LEN - halfKernelLen - 1);
+
+		for (int k = k_min; k < k_max; k++)
+			result[n] += sig[k] * kernel[n - k];
+	}
 	memcpy(sig, result, SIGNAL_LEN * sizeof(double));
 	free(result);
 }
 
 void Bout::convolute(int * sig, const int kernel[], int kernelLen)
 {
+	int halfKernelLen = kernelLen / 2;
 	int * result = (int *)malloc(SIGNAL_LEN * sizeof(int));
 
-	for (int i = 0; i < SIGNAL_LEN; i++)
-		result[i] = 0;
-
 	for (int n = 0; n < SIGNAL_LEN; n++)
-		for (int k = 0; k < SIGNAL_LEN; k++)
-			result[n] += (k < SIGNAL_LEN ? sig[k] : 0) * (n - k < kernelLen ? kernel[n - k] : 0);
+	{
+		result[n] = 0;
 
+		int k_min = (n < halfKernelLen ? 0 : n - halfKernelLen );
+		int k_max = (n < SIGNAL_LEN - halfKernelLen ? n + halfKernelLen : n + SIGNAL_LEN - halfKernelLen - 1);
+
+		for (int k = k_min; k < k_max; k++)
+			result[n] += sig[k] * kernel[n - k];
+	}
 	memcpy(sig, result, SIGNAL_LEN * sizeof(int));
 	free(result);
 }
