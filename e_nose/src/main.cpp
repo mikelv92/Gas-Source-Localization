@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	ros::ServiceServer voltageConfigService = n.advertiseService("e_nose_voltage_config", &ConfigHandler::voltageConfig, &configHandler);
 
 
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(100);
 
 	while (ros::ok())
 	{

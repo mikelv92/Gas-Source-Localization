@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "regression");
 	ros::NodeHandle n;
 
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(100);
 
 
 	FILE * logs = fopen("logs", "w");
@@ -35,4 +35,5 @@ int main(int argc, char** argv)
 //	}
 
 	ros::spin();
+	fclose(logs);
 }

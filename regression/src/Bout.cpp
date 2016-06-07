@@ -181,7 +181,37 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	return bouts;
 }
 
+void Bout::convolute(double * sig, const double kernel[], int kernelLen)
+{
+	double * result = (double *)malloc(SIGNAL_LEN * sizeof(double));
 
+	for (int i = 0; i < SIGNAL_LEN; i++)
+		result[i] = 0;
+
+	for (int n = 0; n < SIGNAL_LEN; n++)
+		for (int k = 0; k < kernelLen; k++)
+			result[n] += (k < SIGNAL_LEN ? sig[k] : 0) * (n - k < kernelLen ? kernel[n - k] : 0);
+
+	memcpy(sig, result, SIGNAL_LEN * sizeof(double));
+	free(result);
+}
+
+void Bout::convolute(int * sig, const int kernel[], int kernelLen)
+{
+	int * result = (int *)malloc(SIGNAL_LEN * sizeof(int));
+
+	for (int i = 0; i < SIGNAL_LEN; i++)
+		result[i] = 0;
+
+	for (int n = 0; n < SIGNAL_LEN; n++)
+		for (int k = 0; k < kernelLen; k++)
+			result[n] += (k < SIGNAL_LEN ? sig[k] : 0) * (n - k < kernelLen ? kernel[n - k] : 0);
+
+	memcpy(sig, result, SIGNAL_LEN * sizeof(int));
+	free(result);
+}
+
+/*
 void Bout::convolute(double * sig, const double kernel[], int kernelLen)
 {
 	double * result = (double*)malloc(SIGNAL_LEN * sizeof(double));
@@ -228,6 +258,7 @@ void Bout::convolute(int * sig, const int kernel[], int kernelLen)
 	free(result);
 
 }
+*/
 
 
 void Bout::populateGaussianFilter(double * kernel)
@@ -237,7 +268,8 @@ void Bout::populateGaussianFilter(double * kernel)
 	for (int i = -KERNEL_LEN / 2; i < KERNEL_LEN / 2; i++)
 	{
 		r = sqrt(i * i);
-		kernel[i + KERNEL_LEN / 2] = exp(-(r * r)/(2 * SMOOTH_STD * SMOOTH_STD)) / (sqrt(2 * M_PI) * SMOOTH_STD);
+//		kernel[i + KERNEL_LEN / 2] = exp(-(r * r)/(2 * SMOOTH_STD * SMOOTH_STD)) / (sqrt(2 * M_PI) * SMOOTH_STD);
+		kernel[i + KERNEL_LEN / 2] = exp(-0.5 * (r * r) / (SMOOTH_STD * SMOOTH_STD));
 		sum += kernel[i + KERNEL_LEN / 2];
 	}
 
