@@ -189,7 +189,7 @@ void Bout::convolute(double * sig, const double kernel[], int kernelLen)
 		result[i] = 0;
 
 	for (int n = 0; n < SIGNAL_LEN; n++)
-		for (int k = 0; k < kernelLen; k++)
+		for (int k = 0; k < SIGNAL_LEN; k++)
 			result[n] += (k < SIGNAL_LEN ? sig[k] : 0) * (n - k < kernelLen ? kernel[n - k] : 0);
 
 	memcpy(sig, result, SIGNAL_LEN * sizeof(double));
@@ -204,7 +204,7 @@ void Bout::convolute(int * sig, const int kernel[], int kernelLen)
 		result[i] = 0;
 
 	for (int n = 0; n < SIGNAL_LEN; n++)
-		for (int k = 0; k < kernelLen; k++)
+		for (int k = 0; k < SIGNAL_LEN; k++)
 			result[n] += (k < SIGNAL_LEN ? sig[k] : 0) * (n - k < kernelLen ? kernel[n - k] : 0);
 
 	memcpy(sig, result, SIGNAL_LEN * sizeof(int));
