@@ -48,7 +48,7 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	// Smooth
 	double * gauss_kernel = (double*)malloc(KERNEL_LEN * sizeof(double));
 	populateGaussianFilter(gauss_kernel);
-	//printArray("Gauss kernel", gauss_kernel, KERNEL_LEN);
+	printArray("Gauss kernel", gauss_kernel, KERNEL_LEN);
 
 	convolute(signal, gauss_kernel, KERNEL_LEN);
 
@@ -57,7 +57,7 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	free(gauss_kernel);
 
 	// Diff
-	double diff_kernel_double[2] = { 1, -1 };
+	double diff_kernel_double[2] = { -1, 1 };
 	convolute(signal, diff_kernel_double, 2);
 	printArray("After diff", signal, SIGNAL_LEN);
 
@@ -85,7 +85,7 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	printArray("init sign change", sign_change, SIGNAL_LEN);
 
 
-	int diff_kernel_int[2] = { 1, -1};
+	int diff_kernel_int[2] = { -1, 1};
 	convolute(sign_change, diff_kernel_int, 2);
 	printArray("Diff int", sign_change, SIGNAL_LEN);
 
@@ -144,7 +144,7 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 
 	// Filter amplitudes according to a threshold
 	double amp_threshold = computeAmpThreshold(amps, poslen);
-	printf("Amp thesh: %lf\n", amp_threshold);
+//	printf("Amp thesh: %lf\n", amp_threshold);
 	int superThreshAmpIndexes[poslen];
 	int thresh_i = 0;
 	for (int i = 0; i < poslen; i++)
