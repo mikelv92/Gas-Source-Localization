@@ -7,8 +7,9 @@
 
 #include "regression/DataHandler.h"
 
-DataHandler::DataHandler(Bout * bout) {
+DataHandler::DataHandler(Bout * bout, WindAvg * windAvg) {
 	this->bout = bout;
+	this->windAvg = windAvg;
 }
 
 
@@ -38,3 +39,16 @@ void DataHandler::e_nose_callback(const e_nose::ENoseData::ConstPtr& e_nose_msg)
 	if (!bout->isSignalArrayFull(S6)) bout->addSample(S6, (double)e_nose_msg->s6);
 	else printf("S6 Bouts: %d\n", bout->getBoutCount(S6));
 }
+
+void DataHandler::wind_speed_callback(const std_msgs::Float32::ConstPtr& wind_speed_msg)
+{
+	if (!windAvg->isSignalArrayFull()) windAvg->addSpeedSampleR((double)wind_speed_msg->data);
+	else windAvg->printR();
+}
+
+void DataHandler::wind_direction_callback(const std_msgs::Float32::ConstPtr& wind_direction_msg)
+{
+	if (!windAvg->isSignalArrayFull()) windAvg->addDirectionSampleR((double)wind_direction_msg->data);
+	else windAvg->printR();
+}
+

@@ -7,7 +7,7 @@
 
 #include "regression/Bout.h"
 
-Bout::Bout(FILE * f) {
+Bout::Bout() {
 	for (int i = PID; i != NUM_SIGNALS; i++)
 	{
 		SignalIndex index = static_cast<SignalIndex>(i);
@@ -18,60 +18,46 @@ Bout::Bout(FILE * f) {
 		resetSamples(index);
 	}
 
-	logFile = f;
-}
-void Bout::printArray(char const * name, double * array, int len)
-{
-	fprintf(logFile, "%s: ", name);
-	for (int i = 0; i < len; i++)
+	logFile = fopen("boutLogs", "w");
+	if (logFile == NULL)
 	{
-		fprintf(logFile, "%lf, ", array[i]);
+		printf("Error opening bout log file\n");
+		exit(1);
 	}
-	fprintf(logFile, "\n");
-}
-
-void Bout::printArray(char const * name, int * array, int len)
-{
-	fprintf(logFile, "%s: ", name);
-	for (int i = 0; i < len; i++)
-	{
-		fprintf(logFile, "%d, ", array[i]);
-	}
-	fprintf(logFile, "\n");
 }
 
 int Bout::getBoutCount(SignalIndex signalIndex)
 {
 	double * signal = signalsMap.find(signalIndex)->second;
 
-	printArray("Init signal", signal, SIGNAL_LEN);
+	Utilities::printArray(logFile, "Init signal", signal, SIGNAL_LEN);
 	// Smooth
 	double * gauss_kernel = (double*)malloc(KERNEL_LEN * sizeof(double));
 	populateGaussianFilter(gauss_kernel);
-	printArray("Gauss kernel", gauss_kernel, KERNEL_LEN);
+//	Utilities::printArray(logFile, "Gauss kernel", gauss_kernel, KERNEL_LEN);
 
 	convolute(signal, gauss_kernel, KERNEL_LEN);
 
-	printArray("After smoothing", signal, SIGNAL_LEN);
+//	Utilities::printArray(logFile, "After smoothing", signal, SIGNAL_LEN);
 
 	free(gauss_kernel);
 
 	// Diff
 	double diff_kernel_double[2] = { -1, 1 };
 	convolute(signal, diff_kernel_double, 2);
-	printArray("After diff", signal, SIGNAL_LEN);
+//	Utilities::printArray(logFile, "After diff", signal, SIGNAL_LEN);
 
 	// EWMA
 	ewma(signal);
 
-	printArray("After ewma", signal, SIGNAL_LEN);
+//	Utilities::printArray(logFile, "After ewma", signal, SIGNAL_LEN);
 
 	double * ewma_signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
 	memcpy(ewma_signal, signal, SIGNAL_LEN * sizeof(double));
 
 	// Derivative
 	convolute(signal, diff_kernel_double, 2);
-	printArray("Diff after ewma", signal, SIGNAL_LEN);
+//	Utilities::printArray(logFile, "Diff after ewma", signal, SIGNAL_LEN);
 
 
 	// Positive part of the derivative
@@ -82,12 +68,12 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 		else
 			sign_change[i] = 0;
 
-	printArray("init sign change", sign_change, SIGNAL_LEN);
+//	Utilities::printArray(logFile, "init sign change", sign_change, SIGNAL_LEN);
 
 
 	int diff_kernel_int[2] = { -1, 1};
 	convolute(sign_change, diff_kernel_int, 2);
-	printArray("Diff int", sign_change, SIGNAL_LEN);
+//	Utilities::printArray(logFile, "Diff int", sign_change, SIGNAL_LEN);
 
 	// Get positive and negative indexes
 	int * pos_changes = (int*)malloc(SIGNAL_LEN * sizeof(int));
@@ -106,8 +92,8 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	int poslen = pos_j;
 	int neglen = neg_j;
 
-	printArray("Pos changes", pos_changes, poslen);
-	printArray("Neg changes", neg_changes, neglen);
+//	Utilities::printArray(logFile, "Pos changes", pos_changes, poslen);
+//	Utilities::printArray(logFile, "Neg changes", neg_changes, neglen);
 
 	int * neg_changes_2;
 	if (pos_changes[0] > neg_changes[0])
@@ -138,7 +124,7 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	for (int i = 0; i < poslen; i++)
 		amps[i] = ewma_signal[posneg[1][i]] - ewma_signal[posneg[0][i]];
 
-	printArray("Amps", amps, poslen);
+//	Utilities::printArray(logFile, "Amps", amps, poslen);
 
 	free(ewma_signal);
 
@@ -159,15 +145,15 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 		filteredAmp_posneg[0][i] = posneg[0][superThreshAmpIndexes[i]];
 		filteredAmp_posneg[1][i] = posneg[1][superThreshAmpIndexes[i]];
 	}
-	printArray("filteredAmp_posNeg0", filteredAmp_posneg[0], filteredAmpsSize);
-	printArray("filteredAmp_posNeg1", filteredAmp_posneg[1], filteredAmpsSize);
+//	Utilities::printArray(logFile, "filteredAmp_posNeg0", filteredAmp_posneg[0], filteredAmpsSize);
+//	Utilities::printArray(logFile, "filteredAmp_posNeg1", filteredAmp_posneg[1], filteredAmpsSize);
 
 	// Get duration of bouts
 	int duration_posneg[filteredAmpsSize];
 	for (int i = 0; i < filteredAmpsSize; i++)
 		duration_posneg[i] = filteredAmp_posneg[1][i] - filteredAmp_posneg[0][i];
 
-	printArray("duration_posneg", duration_posneg, filteredAmpsSize);
+//	Utilities::printArray(logFile, "duration_posneg", duration_posneg, filteredAmpsSize);
 
 	// Filter durations according to a threshold
 	int bouts = 0;
@@ -360,4 +346,7 @@ Bout::~Bout()
 		if (it->second)
 			free(it->second);
 	}
+
+	if (logFile)
+		fclose(logFile);
 }

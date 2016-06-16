@@ -9,7 +9,20 @@
 
 WindAvg::WindAvg() {
 	windIndex = 0;
+	windSpeedIndexR = 0;
+	windDirectionIndexR = 0;
+	windDirectionSamplesR = (double *)malloc(500 * sizeof(float));
+	windSpeedSamplesR = (double *)malloc(500 * sizeof(float));
 	resetSamples();
+
+	logFile = fopen("windLogs", "w");
+	if (logFile == NULL)
+	{
+		printf("Error opening wind log file\n");
+		exit(1);
+	}
+
+
 }
 
 void WindAvg::resetSamples()
@@ -18,6 +31,35 @@ void WindAvg::resetSamples()
 		windSamples[i] = Wind(0, 0, 0);
 	windIndex = 0;
 }
+
+void WindAvg::addSpeedSampleR(float sample)
+{
+	if (windSpeedIndexR < WIND_R_SIGNAL_LEN)
+	{
+		windSpeedSamplesR[windSpeedIndexR] = sample;
+		windSpeedIndexR++;
+	}
+	else
+	{
+		printf("Wind samples array is full\n");
+	}
+
+}
+
+void WindAvg::addDirectionSampleR(float sample)
+{
+	if (windDirectionIndexR < WIND_R_SIGNAL_LEN)
+	{
+		windDirectionSamplesR[windDirectionIndexR] = sample;
+		windDirectionIndexR++;
+	}
+	else
+	{
+		printf("Wind samples array is full\n");
+	}
+
+}
+
 
 void WindAvg::addSample(Wind sample)
 {
@@ -52,8 +94,24 @@ Wind WindAvg::getWindAverage()
 
 }
 
+void WindAvg::printR()
+{
+	Utilities::printArray(logFile, "Wind Direction", windDirectionSamplesR, WIND_R_SIGNAL_LEN);
+	Utilities::printArray(logFile, "Wind speed", windSpeedSamplesR, WIND_R_SIGNAL_LEN);
+
+}
+bool WindAvg::isSignalArrayFull()
+{
+	return windSpeedIndexR >= WIND_R_SIGNAL_LEN || windDirectionIndexR >= WIND_R_SIGNAL_LEN;
+}
+
+
 WindAvg::~WindAvg() {
 	if (windSamples)
 		free(windSamples);
+	if (windSpeedSamplesR)
+		free(windSpeedSamplesR);
+	if (windDirectionSamplesR)
+		free(windDirectionSamplesR);
 }
 

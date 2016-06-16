@@ -14,6 +14,8 @@
 #include <cstring>
 #include <map>
 
+#include "regression/Utilities.h"
+
 using namespace std;
 
 #define SMOOTH_STD 30 //In python it's 30. Check how it works with pandas.rolling_window
@@ -29,7 +31,7 @@ class Bout {
 public:
 	const static int SIGNAL_LEN = 1000;
 
-	Bout(FILE * f);
+	Bout();
 	int getBoutCount(SignalIndex signalIndex);
 	void addSample(SignalIndex signalIndex, double sample);
 	void resetSamples(SignalIndex signalIndex);
@@ -50,8 +52,6 @@ private:
 	void populateGaussianFilter(double * kernel);
 	void ewma(double * signal);
 	double computeAmpThreshold(double * amps, int len);
-	void printArray(char const * name, double * array, int len);
-	void printArray(char const * name, int * array, int len);
 
 };
 
