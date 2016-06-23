@@ -10,20 +10,21 @@
 GaussianRegression::GaussianRegression()
 {
 	K = MatrixXd(0, 0);
+	alpha = 0;
 }
 
 void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
 {
 	X.push_back(x_prime);
 
-	addElementToVector(&y, boutCount);
+	Utilities::addElementToVector(&y, boutCount);
 
 	VectorXd cv;
 	RowVectorXd rv;
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 	{
-		addElementToVector(&cv, kernel->getK(*x, x_prime));
-		addElementToVector(&rv, kernel->getK(x_prime, *x));
+		Utilities::addElementToVector(&cv, kernel->getK(*x, x_prime));
+		Utilities::addElementToVector(&rv, kernel->getK(x_prime, *x));
 	}
 
 	K.conservativeResize(K.rows() + 1, K.cols() + 1);
@@ -33,12 +34,15 @@ void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
 
 double GaussianRegression::mean(Position x_star)
 {
+	/*
+	 * TODO if it is an obstacle, return 0;
+	 */
 	int datasetSize = X.size();
 
 	RowVectorXd k_x_xstar;
 
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
-		addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
+		Utilities::addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
 
 	MatrixXd I_n = MatrixXd::Identity(datasetSize, datasetSize);
 	I_n *= SIGMA_N;
@@ -49,6 +53,10 @@ double GaussianRegression::mean(Position x_star)
 
 double GaussianRegression::variance(Position x_star)
 {
+	/*
+	 * TODO if it is an obstacle, return 0;
+	 */
+
 	int datasetSize = X.size();
 
 	double k_star = kernel->getK(x_star, x_star);
@@ -59,7 +67,7 @@ double GaussianRegression::variance(Position x_star)
 
 	RowVectorXd k_x_xstar;
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
-		addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
+		Utilities::addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
 
 	return k_star - (k_x_xstar * v.inverse() * k_x_xstar.transpose())(0);
 }
@@ -81,7 +89,6 @@ Position GaussianRegression::nextBestPosition()
 			}
 		}
 
-
 	Position maxMeanPos = meanMap.begin()->first;
 	double maxMean = 0;
 
@@ -91,8 +98,6 @@ Position GaussianRegression::nextBestPosition()
 			maxMeanPos = it->first;
 			maxMean = it->second;
 		}
-
-	printf("Max mean: %f, %f: %lf\n", maxMeanPos.getX(), maxMeanPos.getY(), maxMean);
 
 	Position maxVariancePos = varianceMap.begin()->first;
 	double maxVariance = 0;
@@ -104,8 +109,41 @@ Position GaussianRegression::nextBestPosition()
 			maxVariance = it->second;
 		}
 
-	//TODO For now don't consider the variance. Maybe can use MCDM in the future?
 	return maxMeanPos;
+}
+
+double GaussianRegression::computeOrientationToFollow(Position meanPos, Position varPos)
+{
+	double dot = 0, det = 0;
+
+	//angle of meanPos wrt x axis [0 1]
+	dot 				= meanPos.getX() * 0 + meanPos.getY() * 1;
+	det 				= meanPos.getX() * 1 - meanPos.getY() * 0;
+	double meanAngle 	= atan2(det, dot);
+
+	//angle of varPos wrt x axis [0 1]
+	dot 				= varPos.getX() * 0 + varPos.getY() * 1;
+	det 				= varPos.getX() * 1 - varPos.getY() * 0;
+	double varAngle 	= atan2(det, dot);
+
+	double variance = 2;
+
+	if ((double)(rand() / RAND_MAX) > alpha)
+	{
+		mt19937 gen;
+		normal_distribution<double> distribution(meanAngle, variance);
+		variate_generator<mt19937&, normal_distribution<double> > var_nor(gen, distribution);
+		return var_nor();
+
+	}
+	else
+	{
+		mt19937 gen;
+		normal_distribution<double> distribution(varAngle, variance);
+		variate_generator<mt19937&, normal_distribution<double> > var_nor(gen, distribution);
+		return var_nor();
+	}
+
 }
 
 bool GaussianRegression::isExplored(Position x_new)
@@ -119,22 +157,6 @@ bool GaussianRegression::isExplored(Position x_new)
 void GaussianRegression::setKernel(KernelFunction * kernelFunction)
 {
 	this->kernel = kernelFunction;
-}
-
-void GaussianRegression::addElementToVector(VectorXd * vector, double element)
-{
-	vector->conservativeResize(vector->rows() + 1);
-	RowVectorXd vec(1);
-	vec << element;
-	vector->row(vector->rows() - 1) = vec;
-}
-
-void GaussianRegression::addElementToVector(RowVectorXd * vector, double element)
-{
-	vector->conservativeResize(vector->cols() + 1);
-	VectorXd vec(1);
-	vec << element;
-	vector->col(vector->cols() - 1) = vec;
 }
 
 void GaussianRegression::writeMeanMap(FILE * logFile)
@@ -162,3 +184,4 @@ void GaussianRegression::writeMeanMap(FILE * logFile)
 		printf("\n");
 	}
 }
+

@@ -7,6 +7,8 @@ project(regression)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  move_base_msgs
+  actionlib
   std_msgs
   message_generation
 )

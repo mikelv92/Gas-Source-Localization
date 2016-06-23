@@ -129,13 +129,17 @@ int Bout::getBoutCount(SignalIndex signalIndex)
 	free(ewma_signal);
 
 	// Filter amplitudes according to a threshold
-	double amp_threshold = computeAmpThreshold(amps, poslen);
+//	double amp_threshold = computeAmpThreshold(amps, poslen);
 //	printf("Amp thesh: %lf\n", amp_threshold);
 	int superThreshAmpIndexes[poslen];
 	int thresh_i = 0;
+//	for (int i = 0; i < poslen; i++)
+//		if (amps[i] > amp_threshold)
+//			superThreshAmpIndexes[thresh_i++] = i;
 	for (int i = 0; i < poslen; i++)
-		if (amps[i] > amp_threshold)
+		if (amps[i] > BOUT_AMP_THRESHOLD)
 			superThreshAmpIndexes[thresh_i++] = i;
+
 	int filteredAmpsSize = thresh_i;
 
 	// Get indices of those that passed the threshold
@@ -285,7 +289,7 @@ void Bout::ewma(double * sig)
 	for (int i = 0; i < SIGNAL_LEN; i++)
 	{
 		x_t = sig[i];
-		result[i] = (1 - alpha) * y_t_old + alpha * (x_t - x_t_old);
+		result[i] = (1 - alpha) * y_t_old + alpha * (x_t);
 
 		x_t_old = sig[i];
 		y_t_old = result[i];

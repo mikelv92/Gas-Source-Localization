@@ -14,7 +14,7 @@ private:
 	float y;
 	float z;
 public:
-	Position(float x, float y, float z = 1) : x(x), y(y), z(z) {};
+	Position(float x, float y, float z = 0) : x(x), y(y), z(z) {};
 
 	float getX() const {
 		return x;

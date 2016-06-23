@@ -10,6 +10,12 @@
 
 #include "regression/KernelFunction.h"
 #include "regression/Position.h"
+#include "regression/Utilities.h"
+
+#include <boost/random.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <stdlib.h>
+
 #include <Eigen/Dense>
 #include <list>
 #include <map>
@@ -22,9 +28,11 @@
 
 using namespace Eigen;
 using namespace std;
+using namespace boost;
 
 class GaussianRegression {
 private:
+	double alpha; // Tradeoff between variance and mean
 	KernelFunction * kernel;
 	list<Position> X;
 
@@ -32,8 +40,8 @@ private:
 	VectorXd y;
 
 	bool isExplored(Position x);
-	void addElementToVector(VectorXd * vector, double element);
-	void addElementToVector(RowVectorXd * vector, double element);
+	Position computeCentroid(map<Position, double> dataMap);
+	double computeOrientationToFollow(Position meanPos, Position varPos);
 
 public:
 	GaussianRegression();
