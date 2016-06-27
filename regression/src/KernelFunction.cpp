@@ -10,8 +10,16 @@
 KernelFunction::KernelFunction(Wind w) {
 	wind = w;
 
+	// Simulator wind
+	/*
 	semiMajorAxis = SPATIAL_SCALE + WIND_SCALE * wind.get2DSpeed();
 	semiMinorAxis = SPATIAL_SCALE / (1 + (WIND_SCALE * wind.get2DSpeed()) / SPATIAL_SCALE);
+
+	 */
+
+	// Windsonic wind
+	semiMajorAxis = SPATIAL_SCALE + WIND_SCALE * wind.getSpeed();
+	semiMinorAxis = SPATIAL_SCALE / (1 + (WIND_SCALE * wind.getSpeed()) / SPATIAL_SCALE);
 
 	sigma0Upwind[0][0] = semiMajorAxis;
 	sigma0Upwind[0][1] = 0;
@@ -23,9 +31,19 @@ KernelFunction::KernelFunction(Wind w) {
 	sigma0Downwind[1][0] = 0;
 	sigma0Downwind[1][1] = semiMinorAxis;
 
+	// Simulator angle
+	/*
 	//alpha is the angle of the wind direction wrt the vector [ 0 1 ]
 	double cos_alpha = (wind.getU() * 0 + wind.getV() * 1) / (wind.get2DSpeed() * 1);
 	double sin_alpha = sqrt(1 - cos_alpha * cos_alpha);
+	 */
+
+	// Windsonic angle
+	// Orient the robot at the direciton [0 1] always.
+	double cos_alpha = cos(wind.getDirection() * M_PI / 180);
+	double sin_alpha = sin(wind.getDirection() * M_PI / 180);
+
+
 
 	rotMatrix[0][0] = cos_alpha;
 	rotMatrix[0][1] = -1 * sin_alpha;
@@ -88,11 +106,21 @@ double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 
 bool KernelFunction::isUpwind(Position diff)
 {
+	// Simulator upwind computation
+	/*
 	double dot = diff.getX() * wind.getU() + diff.getY() * wind.getV();
 	double det = diff.getX() * wind.getV() - diff.getY() * wind.getU();
 
+
 	double angle = atan2(det, dot);
 	return angle > M_PI / 2 || angle < -1 * M_PI / 2;
+	*/
+
+	// Windsonic upwind computation
+	double diffAngle = atan2(diff.getY(), diff.getX());
+
+	double angle = diffAngle - wind.getDirection() * M_PI / 180;
+	return angle < M_PI / 2 && angle > -1 * M_PI / 2;
 }
 
 void KernelFunction::invertMatrix(double **matrix)

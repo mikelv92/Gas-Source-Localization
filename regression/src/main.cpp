@@ -31,7 +31,10 @@ void moveBase(Position position)
 	goal.target_pose.pose.position.x = position.getX();
 	goal.target_pose.pose.position.y = position.getY();
 
-	goal.target_pose.pose.orientation.w = 1.0;
+	goal.target_pose.pose.orientation.x = 0.0;
+	goal.target_pose.pose.orientation.y = 0.0;
+	goal.target_pose.pose.orientation.z = 1.0;
+	goal.target_pose.pose.orientation.w = 0.0;
 
 	ROS_INFO("Sending goal");
 	moveBaseClient.sendGoal(goal);
@@ -53,6 +56,7 @@ void resetSamples(Bout * bout)
 	bout->resetSamples(S5);
 	bout->resetSamples(S6);
 }
+
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "regression");
@@ -81,15 +85,16 @@ int main(int argc, char** argv)
 				bout.isSignalArrayFull(S3) &&
 				bout.isSignalArrayFull(S4) &&
 				bout.isSignalArrayFull(S5) &&
-				bout.isSignalArrayFull(S6)
+				bout.isSignalArrayFull(S6) &&
+				windAvg.isSignalArrayFull()
 			)
 		{
-			//TODO get the real wind from windsonic
 			int boutCount = bout.getBoutCount(S1);
 			resetSamples(&bout);
 
-			KernelFunction kernelFunction(Wind()); //TODO get the real wind from windsonic
-			//gaussianRegression.setKernel(&kernelFunction);
+			Wind w = Wind(windAvg.getSpeedAverage(), windAvg.getDirectionAverage());
+			KernelFunction kernelFunction(w);
+			gaussianRegression.setKernel(&kernelFunction);
 			gaussianRegression.addMeasurement(currentPosition, boutCount);
 
 			Position newPosition = gaussianRegression.nextBestPosition();

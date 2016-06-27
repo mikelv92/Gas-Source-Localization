@@ -10,7 +10,8 @@
 GaussianRegression::GaussianRegression()
 {
 	K = MatrixXd(0, 0);
-	alpha = 0;
+	alpha = 1;
+	currentPosition = Position(0, 0, 0);
 }
 
 void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
@@ -109,39 +110,54 @@ Position GaussianRegression::nextBestPosition()
 			maxVariance = it->second;
 		}
 
-	return maxMeanPos;
+	return updateCurrentPosition(maxMeanPos, maxVariancePos);
 }
 
-double GaussianRegression::computeOrientationToFollow(Position meanPos, Position varPos)
+Position GaussianRegression::updateCurrentPosition(Position meanPos, Position varPos)
 {
 	double dot = 0, det = 0;
 
-	//angle of meanPos wrt x axis [0 1]
-	dot 				= meanPos.getX() * 0 + meanPos.getY() * 1;
-	det 				= meanPos.getX() * 1 - meanPos.getY() * 0;
+	//angle of meanPos wrt x axis [1 0]
+	dot 				= meanPos.getX() * 1 + meanPos.getY() * 0;
+	det 				= meanPos.getX() * 0 - meanPos.getY() * 1;
 	double meanAngle 	= atan2(det, dot);
 
-	//angle of varPos wrt x axis [0 1]
-	dot 				= varPos.getX() * 0 + varPos.getY() * 1;
-	det 				= varPos.getX() * 1 - varPos.getY() * 0;
+	//angle of varPos wrt x axis [1 0]
+	dot 				= varPos.getX() * 1 + varPos.getY() * 0;
+	det 				= varPos.getX() * 0 - varPos.getY() * 1;
 	double varAngle 	= atan2(det, dot);
 
-	double variance = 2;
+	double angle;
 
 	if ((double)(rand() / RAND_MAX) > alpha)
 	{
 		mt19937 gen;
-		normal_distribution<double> distribution(meanAngle, variance);
+		normal_distribution<double> distribution(meanAngle, MEAN_GAUSS_VARIANCE);
 		variate_generator<mt19937&, normal_distribution<double> > var_nor(gen, distribution);
-		return var_nor();
+		angle = var_nor();
 
 	}
 	else
 	{
 		mt19937 gen;
-		normal_distribution<double> distribution(varAngle, variance);
+		normal_distribution<double> distribution(varAngle, VAR_GAUSS_VARIANCE);
 		variate_generator<mt19937&, normal_distribution<double> > var_nor(gen, distribution);
-		return var_nor();
+		angle = var_nor();
+	}
+
+	double new_pos_x = currentPosition.getX() + RHO * cos((double)angle * M_PI / 180);
+	double new_pos_y = currentPosition.getY() + RHO * sin((double)angle * M_PI / 180);
+
+	alpha *= 0.99;
+
+	if (alpha < ALPHA_THRESHOLD)
+		return meanPos;
+	else
+	{
+		currentPosition.setX(new_pos_x);
+		currentPosition.setY(new_pos_y);
+
+		return currentPosition;
 	}
 
 }

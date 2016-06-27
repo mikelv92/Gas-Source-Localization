@@ -22,3 +22,9 @@ Wind::Wind()
 	this->w = 0;
 	this->speed2D = 0;
 }
+
+Wind::Wind(double speed, int direction)
+{
+	this->speed = speed;
+	this->direction = direction;
+}

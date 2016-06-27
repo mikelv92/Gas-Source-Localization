@@ -12,6 +12,11 @@
 
 class Wind {
 private:
+	// Windsonic
+	int direction;
+	double speed;
+
+	// Simulator
 	double speed2D;
 	double u;
 	double w;
@@ -20,9 +25,30 @@ private:
 public:
 	Wind();
 	Wind(double u, double v, double w);
+	Wind(double speed, int direction);
 
 	double get2DSpeed() const {
 		return speed2D;
+	}
+
+	double getSpeed() const
+	{
+		return this->speed;
+	}
+
+	int getDirection() const
+	{
+		return this->direction;
+	}
+
+	void setSpeed(double speed)
+	{
+		this->speed = speed;
+	}
+
+	void setDirection(int direction)
+	{
+		this->direction = direction;
 	}
 
 	void set2DSpeed(double speed)

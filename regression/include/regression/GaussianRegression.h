@@ -20,11 +20,15 @@
 #include <list>
 #include <map>
 
-#define SIGMA_N 2;
+#define SIGMA_N 2
 #define ENV_X 10
 #define ENV_Y 5
 #define STEP_SIZE 0.5
 #define A_K 100
+#define RHO 5.0
+#define MEAN_GAUSS_VARIANCE 2.0
+#define VAR_GAUSS_VARIANCE 2.0
+#define ALPHA_THRESHOLD 0.1
 
 using namespace Eigen;
 using namespace std;
@@ -39,9 +43,11 @@ private:
 	MatrixXd K;
 	VectorXd y;
 
+	Position currentPosition;
+
 	bool isExplored(Position x);
 	Position computeCentroid(map<Position, double> dataMap);
-	double computeOrientationToFollow(Position meanPos, Position varPos);
+	Position updateCurrentPosition(Position meanPos, Position varPos);
 
 public:
 	GaussianRegression();

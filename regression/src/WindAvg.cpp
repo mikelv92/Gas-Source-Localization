@@ -13,7 +13,7 @@ WindAvg::WindAvg() {
 	windDirectionIndexR = 0;
 
 	windSamples = (Wind *)malloc(Bout::SIGNAL_LEN * sizeof(Wind));
-	windDirectionSamplesR = (double *)malloc(WIND_R_SIGNAL_LEN * sizeof(double));
+	windDirectionSamplesR = (int *)malloc(WIND_R_SIGNAL_LEN * sizeof(int));
 	windSpeedSamplesR = (double *)malloc(WIND_R_SIGNAL_LEN * sizeof(double));
 	resetSamples();
 
@@ -55,7 +55,7 @@ void WindAvg::addSpeedSampleR(double sample)
 
 }
 
-void WindAvg::addDirectionSampleR(double sample)
+void WindAvg::addDirectionSampleR(int sample)
 {
 	if (windDirectionIndexR < WIND_R_SIGNAL_LEN)
 	{
@@ -103,6 +103,25 @@ Wind WindAvg::getWindAverage()
 
 }
 
+int WindAvg::getDirectionAverage()
+{
+	int direction = 0;
+	for (int i = 0; i < WIND_R_SIGNAL_LEN; i++)
+	{
+		direction += windDirectionSamplesR[i];
+	}
+	return direction / WIND_R_SIGNAL_LEN;
+}
+
+double WindAvg::getSpeedAverage()
+{
+	double speed = 0;
+	for (int i = 0; i < WIND_R_SIGNAL_LEN; i++)
+	{
+		speed += windSpeedSamplesR[i];
+	}
+	return speed / WIND_R_SIGNAL_LEN;
+}
 void WindAvg::printR()
 {
 	Utilities::printArray(logFile, "Wind Direction", windDirectionSamplesR, WIND_R_SIGNAL_LEN);
