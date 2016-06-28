@@ -198,6 +198,7 @@ add_executable(regression
 				src/Bout.cpp 
 				src/GaussianRegression.cpp
 				src/DataHandler.cpp
+				src/GMap.cpp
 				)
 target_link_libraries(regression ${catkin_LIBRARIES})
 add_dependencies(regression regression_generate_messages_cpp)

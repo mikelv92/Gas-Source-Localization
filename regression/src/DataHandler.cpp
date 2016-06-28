@@ -7,9 +7,10 @@
 
 #include "regression/DataHandler.h"
 
-DataHandler::DataHandler(Bout * bout, WindAvg * windAvg) {
+DataHandler::DataHandler(Bout * bout, WindAvg * windAvg, GMap * gmap) {
 	this->bout = bout;
 	this->windAvg = windAvg;
+	this->gmap = gmap;
 }
 
 
@@ -50,5 +51,16 @@ void DataHandler::wind_direction_callback(const std_msgs::Float32::ConstPtr& win
 {
 	if (!windAvg->isSignalArrayFull()) windAvg->addDirectionSampleR((double)wind_direction_msg->data);
 //	else windAvg->printR();
+}
+
+void DataHandler::gmap_callback(const nav_msgs::OccupancyGrid gmap_msg)
+{
+
+	gmap->init		(
+						(unsigned int)gmap_msg.info.width,
+						(unsigned int)gmap_msg.info.height,
+						(double)gmap_msg.info.resolution,
+						(int *)&(gmap_msg.data)[0]
+					);
 }
 

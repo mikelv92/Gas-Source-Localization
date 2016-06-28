@@ -35,9 +35,9 @@ void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
 
 double GaussianRegression::mean(Position x_star)
 {
-	/*
-	 * TODO if it is an obstacle, return 0;
-	 */
+	if (gmap->isOccupied(x_star))
+		return 0;
+
 	int datasetSize = X.size();
 
 	RowVectorXd k_x_xstar;
@@ -54,9 +54,8 @@ double GaussianRegression::mean(Position x_star)
 
 double GaussianRegression::variance(Position x_star)
 {
-	/*
-	 * TODO if it is an obstacle, return 0;
-	 */
+	if (gmap->isOccupied(x_star))
+		return 0;
 
 	int datasetSize = X.size();
 
@@ -173,6 +172,11 @@ bool GaussianRegression::isExplored(Position x_new)
 void GaussianRegression::setKernel(KernelFunction * kernelFunction)
 {
 	this->kernel = kernelFunction;
+}
+
+void GaussianRegression::setGMap(GMap * gmap)
+{
+	this->gmap = gmap;
 }
 
 void GaussianRegression::writeMeanMap(FILE * logFile)

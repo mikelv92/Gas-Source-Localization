@@ -10,9 +10,6 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 
-#define RHO 1.0
-
-
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 
@@ -69,13 +66,18 @@ int main(int argc, char** argv)
 
 	Bout bout;
 	WindAvg windAvg;
+	GMap gmap;
 	GaussianRegression gaussianRegression;
-	DataHandler datahandler(&bout, &windAvg);
+
+	gaussianRegression.setGMap(&gmap);
+
+	DataHandler datahandler(&bout, &windAvg, &gmap);
 
 	ros::Subscriber pid_sub 			= n.subscribe("/pid_node/ppm", 1000, &DataHandler::pid_callback, &datahandler);
 	ros::Subscriber e_nose_sub 			= n.subscribe("/e_nose_data", 1000, &DataHandler::e_nose_callback, &datahandler);
 	ros::Subscriber wind_speed_sub 		= n.subscribe("/windsonic/wind_speed", 1000, &DataHandler::wind_speed_callback, &datahandler);
 	ros::Subscriber wind_direction_sub 	= n.subscribe("/windsonic/wind_direction", 1000, &DataHandler::wind_direction_callback, &datahandler);
+	ros::Subscriber gmap_sub			= n.subscribe("/map", 1000, &DataHandler::gmap_callback, &datahandler);
 
 	while (ros::ok())
 	{
@@ -86,7 +88,8 @@ int main(int argc, char** argv)
 				bout.isSignalArrayFull(S4) &&
 				bout.isSignalArrayFull(S5) &&
 				bout.isSignalArrayFull(S6) &&
-				windAvg.isSignalArrayFull()
+				windAvg.isSignalArrayFull() &&
+				gmap.isInitialized()
 			)
 		{
 			int boutCount = bout.getBoutCount(S1);

@@ -9,6 +9,7 @@
 #define REGRESSION_SRC_GAUSSIANREGRESSION_H_
 
 #include "regression/KernelFunction.h"
+#include "regression/GMap.h"
 #include "regression/Position.h"
 #include "regression/Utilities.h"
 
@@ -38,6 +39,7 @@ class GaussianRegression {
 private:
 	double alpha; // Tradeoff between variance and mean
 	KernelFunction * kernel;
+	GMap * gmap;
 	list<Position> X;
 
 	MatrixXd K;
@@ -56,6 +58,7 @@ public:
 	void addMeasurement(Position x_prime, int boutCount);
 	Position nextBestPosition();
 	void setKernel(KernelFunction * kernelFunction);
+	void setGMap(GMap * gmap);
 	void writeMeanMap(FILE * logFile);
 };
 
