@@ -48,8 +48,8 @@ private:
 	Position currentPosition;
 
 	bool isExplored(Position x);
-	Position computeCentroid(map<Position, double> dataMap);
 	Position updateCurrentPosition(Position meanPos, Position varPos);
+	void updatePosToNearestFreeCell(Position * position);
 
 public:
 	GaussianRegression();

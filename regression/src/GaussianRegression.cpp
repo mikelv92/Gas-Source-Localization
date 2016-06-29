@@ -144,8 +144,8 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		angle = var_nor();
 	}
 
-	double new_pos_x = currentPosition.getX() + RHO * cos((double)angle * M_PI / 180);
-	double new_pos_y = currentPosition.getY() + RHO * sin((double)angle * M_PI / 180);
+	int new_pos_x = floor(currentPosition.getX() + RHO * cos((double)angle * M_PI / 180));
+	int new_pos_y = floor(currentPosition.getY() + RHO * sin((double)angle * M_PI / 180));
 
 	alpha *= 0.99;
 
@@ -155,10 +155,31 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	{
 		currentPosition.setX(new_pos_x);
 		currentPosition.setY(new_pos_y);
-
+		updatePosToNearestFreeCell(&currentPosition);
 		return currentPosition;
 	}
 
+}
+
+void GaussianRegression::updatePosToNearestFreeCell(Position * position)
+{
+	int x = position->getX();
+	int y = position->getY();
+
+	for (int k = 0; x + k < gmap->getWidth() && y + k < gmap->getHeight(); k++)
+		for (int i = -k; i <= k; i++)
+		{
+			if (x + k < gmap->getWidth() && x - k >= 0)
+				position->setX(x + k);
+
+			for (int j = -k; j <= k; j++)
+			{
+				if (y + k < gmap->getHeight() && y - k >= 0)
+					position->setY(y + k);
+				if (!gmap->isOccupied(*position) && !isExplored(*position))
+					return;
+			}
+		}
 }
 
 bool GaussianRegression::isExplored(Position x_new)

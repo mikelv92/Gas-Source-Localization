@@ -33,6 +33,30 @@ public:
 	bool isOccupied(Position position);
 	bool isInitialized();
 	virtual ~GMap();
+
+	unsigned int getHeight() const {
+		return height;
+	}
+
+	void setHeight(unsigned int height) {
+		this->height = height;
+	}
+
+	double getResolution() const {
+		return resolution;
+	}
+
+	void setResolution(double resolution) {
+		this->resolution = resolution;
+	}
+
+	unsigned int getWidth() const {
+		return width;
+	}
+
+	void setWidth(unsigned int width) {
+		this->width = width;
+	}
 };
 
 #endif /* GAS_SOURCE_LOCALIZATION_REGRESSION_SRC_GMAP_H_ */
