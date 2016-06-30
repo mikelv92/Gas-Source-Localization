@@ -166,7 +166,7 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 	int x = position->getX();
 	int y = position->getY();
 
-	for (int k = 0; x + k < gmap->getWidth() && y + k < gmap->getHeight(); k++)
+	for (int k = 0; x + k < gmap->getWidth() || y + k < gmap->getHeight(); k++)
 		for (int i = -k; i <= k; i += k)
 		{
 			if (x + k < gmap->getWidth() && x - k >= 0)

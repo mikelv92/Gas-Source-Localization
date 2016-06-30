@@ -39,9 +39,8 @@ KernelFunction::KernelFunction(Wind w) {
 	 */
 
 	// Windsonic angle
-	// Orient the robot at the direciton [0 1] always.
-	double cos_alpha = cos(wind.getDirection() * M_PI / 180);
-	double sin_alpha = sin(wind.getDirection() * M_PI / 180);
+	double cos_alpha = cos(wind.getDirection());
+	double sin_alpha = sin(wind.getDirection());
 
 
 

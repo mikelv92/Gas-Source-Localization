@@ -22,7 +22,7 @@ void moveBase(Position position)
 
 	move_base_msgs::MoveBaseGoal goal;
 
-	goal.target_pose.header.frame_id = "base_link";
+	goal.target_pose.header.frame_id = "map";
 	goal.target_pose.header.stamp = ros::Time::now();
 
 	goal.target_pose.pose.position.x = position.getX();
@@ -78,6 +78,7 @@ int main(int argc, char** argv)
 	ros::Subscriber wind_speed_sub 		= n.subscribe("/windsonic/wind_speed", 1000, &DataHandler::wind_speed_callback, &datahandler);
 	ros::Subscriber wind_direction_sub 	= n.subscribe("/windsonic/wind_direction", 1000, &DataHandler::wind_direction_callback, &datahandler);
 	ros::Subscriber gmap_sub			= n.subscribe("/map", 1000, &DataHandler::gmap_callback, &datahandler);
+	ros::Subscriber ndt_mcl_sub			= n.subscribe("/ndt_mcl", 1000, &DataHandler::ndt_mcl_callback, &datahandler);
 
 	while (ros::ok())
 	{
@@ -95,7 +96,11 @@ int main(int argc, char** argv)
 			int boutCount = bout.getBoutCount(S1);
 			resetSamples(&bout);
 
-			Wind w = Wind(windAvg.getSpeedAverage(), windAvg.getDirectionAverage());
+			double windDirection = windAvg.getDirectionAverage() * M_PI / 180;
+
+			//Add
+			Wind w = Wind(windAvg.getSpeedAverage(), windDirection + datahandler.getRobotOrientation());
+
 			KernelFunction kernelFunction(w);
 			gaussianRegression.setKernel(&kernelFunction);
 			gaussianRegression.addMeasurement(currentPosition, boutCount);
