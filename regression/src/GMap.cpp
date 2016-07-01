@@ -6,6 +6,12 @@
  */
 
 #include "regression/GMap.h"
+GMap::GMap()
+{
+	this->_isInit = false;
+	this->width = 0;
+	this->height = 0;
+}
 
 void GMap::init(unsigned int width, unsigned int height, double resolution, int * data) {
 	this->width = width;
@@ -20,7 +26,7 @@ void GMap::init(unsigned int width, unsigned int height, double resolution, int 
 		for (int j = 0; j < width; j++)
 			occupancyGrid[i][j] = data[width * i + j];
 
-	_isInit = true;
+	this->_isInit = true;
 }
 
 bool GMap::isOccupied(Position position)
@@ -32,7 +38,7 @@ bool GMap::isOccupied(Position position)
 
 bool GMap::isInitialized()
 {
-	return _isInit;
+	return this->_isInit;
 }
 
 GMap::~GMap() {

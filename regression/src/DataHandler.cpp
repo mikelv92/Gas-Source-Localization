@@ -11,6 +11,7 @@ DataHandler::DataHandler(Bout * bout, WindAvg * windAvg, GMap * gmap) {
 	this->bout = bout;
 	this->windAvg = windAvg;
 	this->gmap = gmap;
+	this->robotOrientation = 0;
 }
 
 

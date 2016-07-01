@@ -21,14 +21,12 @@ private:
 	unsigned int width;
 	unsigned int height;
 
-	Position origin;
-
 	int** occupancyGrid;
 
 	bool _isInit;
 
 public:
-	GMap() { _isInit = false; };
+	GMap();
 	void init(unsigned int width, unsigned int height, double resolution, int * data);
 	bool isOccupied(Position position);
 	bool isInitialized();
