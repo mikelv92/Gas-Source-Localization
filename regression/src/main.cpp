@@ -15,7 +15,7 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 
 void moveBase(Position position)
 {
-	MoveBaseClient moveBaseClient("move_base", false);
+	MoveBaseClient moveBaseClient("move_base", true);
 
 	while (!moveBaseClient.waitForServer(ros::Duration(5.0)))
 		ROS_INFO("Waiting for the move_base action server to come up");
