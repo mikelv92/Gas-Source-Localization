@@ -39,7 +39,7 @@ void moveBase(Position position)
 
 }
 
-void resetSamples(Bout * bout)
+void resetSamples(Bout * bout, WindAvg * windAvg)
 {
 	bout->resetSamples(S1);
 	bout->resetSamples(S2);
@@ -47,6 +47,7 @@ void resetSamples(Bout * bout)
 	bout->resetSamples(S4);
 	bout->resetSamples(S5);
 	bout->resetSamples(S6);
+	windAvg->resetSamples();
 }
 
 int main(int argc, char** argv)
@@ -89,7 +90,7 @@ int main(int argc, char** argv)
 			)
 		{
 			int boutCount = bout.getBoutCount(S1);
-			resetSamples(&bout);
+			resetSamples(&bout, &windAvg);
 
 			double windDirection = windAvg.getDirectionAverage() * M_PI / 180;
 
