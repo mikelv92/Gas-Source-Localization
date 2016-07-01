@@ -56,13 +56,17 @@ void DataHandler::wind_direction_callback(const std_msgs::Float32::ConstPtr& win
 
 void DataHandler::gmap_callback(const nav_msgs::OccupancyGrid gmap_msg)
 {
+	unsigned int width = (unsigned int)gmap_msg.info.width;
+	unsigned int height = (unsigned int)gmap_msg.info.height;
+	double resolution = (double)gmap_msg.info.resolution;
 
-	gmap->init		(
-						(unsigned int)gmap_msg.info.width,
-						(unsigned int)gmap_msg.info.height,
-						(double)gmap_msg.info.resolution,
-						(int *)&(gmap_msg.data)[0]
-					);
+	int * dataArray = (int *)malloc(width * height * sizeof(int));
+    for (int i = 0; i < width * height; i++)
+            dataArray[i] = (int)gmap_msg.data[i];
+
+	gmap->init(width, height, resolution, dataArray);
+
+	free(dataArray);
 }
 
 void DataHandler::ndt_mcl_callback(const nav_msgs::Odometry ndt_mcl_msg)
