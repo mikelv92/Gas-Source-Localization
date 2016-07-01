@@ -66,6 +66,19 @@ public:
 		return Position(floor(numX / den), floor(numY / den));
 	}
 
+	static double integral(double(*f)(double x), double a, double b, int n)
+	{
+		//a is low bound, b is high bound, x is the variable, n is the steps
+		double step = (b - a) / n;
+		double area = 0.0;
+		for (int i = 0; i < n; i++)
+		{
+			area += f(a + (i + 0.5) * step) * step;
+		}
+		return area;
+	}
+
+
 
 
 };

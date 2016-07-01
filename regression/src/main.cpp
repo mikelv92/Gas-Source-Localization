@@ -28,11 +28,6 @@ void moveBase(Position position)
 	goal.target_pose.pose.position.x = position.getX();
 	goal.target_pose.pose.position.y = position.getY();
 
-	goal.target_pose.pose.orientation.x = 0.0;
-	goal.target_pose.pose.orientation.y = 0.0;
-	goal.target_pose.pose.orientation.z = 1.0;
-	goal.target_pose.pose.orientation.w = 0.0;
-
 	ROS_INFO("Sending goal");
 	moveBaseClient.sendGoal(goal);
 	moveBaseClient.waitForResult();

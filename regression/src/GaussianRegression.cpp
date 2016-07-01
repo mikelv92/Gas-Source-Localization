@@ -12,6 +12,8 @@ GaussianRegression::GaussianRegression()
 	K = MatrixXd(0, 0);
 	alpha = 1;
 	currentPosition = Position(0, 0, 0);
+	meanAngle = 0;
+	varAngle = 0;
 }
 
 void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
@@ -119,12 +121,12 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	//angle of meanPos wrt x axis [1 0]
 	dot 				= meanPos.getX() * 1 + meanPos.getY() * 0;
 	det 				= meanPos.getX() * 0 - meanPos.getY() * 1;
-	double meanAngle 	= atan2(det, dot);
+	meanAngle 	= atan2(det, dot);
 
 	//angle of varPos wrt x axis [1 0]
 	dot 				= varPos.getX() * 1 + varPos.getY() * 0;
 	det 				= varPos.getX() * 0 - varPos.getY() * 1;
-	double varAngle 	= atan2(det, dot);
+	varAngle 	= atan2(det, dot);
 
 	double angle;
 
@@ -199,6 +201,18 @@ void GaussianRegression::setGMap(GMap * gmap)
 {
 	this->gmap = gmap;
 }
+
+double GaussianRegression::meanDirGaussF(double theta)
+{
+	return exp((-1 * (theta - meanAngle) * (theta - meanAngle)) / (MEAN_GAUSS_VARIANCE * MEAN_GAUSS_VARIANCE));
+}
+
+double GaussianRegression::varDirGaussF(double theta)
+{
+	return exp((-1 * (theta - varAngle) * (theta - varAngle)) / (VAR_GAUSS_VARIANCE * VAR_GAUSS_VARIANCE));
+}
+
+
 
 void GaussianRegression::writeMeanMap(FILE * logFile)
 {

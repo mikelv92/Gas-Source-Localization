@@ -13,6 +13,8 @@
 #include "regression/Position.h"
 #include "regression/Utilities.h"
 
+#include <cmath>
+
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <stdlib.h>
@@ -38,6 +40,9 @@ using namespace boost;
 class GaussianRegression {
 private:
 	double alpha; // Tradeoff between variance and mean
+	double meanAngle;
+	double varAngle;
+
 	KernelFunction * kernel;
 	GMap * gmap;
 	list<Position> X;
@@ -50,6 +55,9 @@ private:
 	bool isExplored(Position x);
 	Position updateCurrentPosition(Position meanPos, Position varPos);
 	void updatePosToNearestFreeCell(Position * position);
+	double meanDirGaussF(double theta);
+	double varDirGaussF(double theta);
+
 
 public:
 	GaussianRegression();
