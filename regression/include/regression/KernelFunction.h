@@ -40,6 +40,13 @@ public:
 	double getK(Position x, Position x_prime);
 	~KernelFunction();
 
+	const Wind& getWind() const {
+		return wind;
+	}
+
+	void setWind(const Wind& wind) {
+		this->wind = wind;
+	}
 };
 
 #endif /* REGRESSION_SRC_KERNELFUNCTION_H_ */

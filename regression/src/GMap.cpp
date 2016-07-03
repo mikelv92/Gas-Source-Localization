@@ -13,10 +13,18 @@ GMap::GMap()
 	this->height = 0;
 }
 
-void GMap::init(unsigned int width, unsigned int height, double resolution, int * data) {
+void GMap::init(unsigned int width,
+				unsigned int height,
+				double resolution,
+				double origin_x,
+				double origin_y,
+				int * data
+				)
+{
 	this->width = width;
 	this->height = height;
 	this->resolution = resolution;
+	this->origin = Position(origin_x, origin_y);
 
 	occupancyGrid = (int **)malloc(width * sizeof(int *));
 	for (int i = 0; i < width; i++)

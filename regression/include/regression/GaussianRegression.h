@@ -26,7 +26,7 @@
 #define SIGMA_N 2
 #define ENV_X 10
 #define ENV_Y 5
-#define STEP_SIZE 0.5
+#define STEP_SIZE 1
 #define A_K 100
 #define RHO 5.0
 #define MEAN_GAUSS_VARIANCE 2.0
@@ -58,6 +58,7 @@ private:
 	double meanDirGaussF(double theta);
 	double varDirGaussF(double theta);
 
+	FILE * logFile;
 
 public:
 	GaussianRegression();
@@ -67,7 +68,9 @@ public:
 	Position nextBestPosition();
 	void setKernel(KernelFunction * kernelFunction);
 	void setGMap(GMap * gmap);
-	void writeMeanMap(FILE * logFile);
+	void printMeanMap();
+	void printVarianceMap();
+	~GaussianRegression();
 };
 
 #endif /* REGRESSION_SRC_GAUSSIANREGRESSION_H_ */

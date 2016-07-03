@@ -13,6 +13,7 @@ private:
 	float x;
 	float y;
 	float z;
+	float orientation; //radians
 public:
 	Position() {};
 	Position(float x, float y, float z = 0) : x(x), y(y), z(z) {};
@@ -56,6 +57,14 @@ public:
 		return this->getX() < pos.getX() ||
 				(this->getX() == pos.getX() && this->getY() < pos.getY()) ||
 				(this->getX() == pos.getX() && this->getY() == pos.getY() && this->getZ() < pos.getZ());
+	}
+
+	float getOrientation() const {
+		return orientation;
+	}
+
+	void setOrientation(float orientation) {
+		this->orientation = orientation;
 	}
 };
 

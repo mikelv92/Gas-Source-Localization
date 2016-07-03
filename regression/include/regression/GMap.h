@@ -24,10 +24,17 @@ private:
 	int** occupancyGrid;
 
 	bool _isInit;
+	Position origin;
 
 public:
 	GMap();
-	void init(unsigned int width, unsigned int height, double resolution, int * data);
+	void init(	unsigned int width,
+				unsigned int height,
+				double resolution,
+				double origin_x,
+				double origin_y,
+				int * data
+			);
 	bool isOccupied(Position position);
 	bool isInitialized();
 	virtual ~GMap();
@@ -54,6 +61,14 @@ public:
 
 	void setWidth(unsigned int width) {
 		this->width = width;
+	}
+
+	const Position& getOrigin() const {
+		return origin;
+	}
+
+	void setOrigin(const Position& origin) {
+		this->origin = origin;
 	}
 };
 

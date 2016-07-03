@@ -7,6 +7,8 @@
 
 #include "regression/GaussianRegression.h"
 
+#define DEBUG
+
 GaussianRegression::GaussianRegression()
 {
 	K = MatrixXd(0, 0);
@@ -14,6 +16,8 @@ GaussianRegression::GaussianRegression()
 	currentPosition = Position(0, 0, 0);
 	meanAngle = 0;
 	varAngle = 0;
+
+	logFile = fopen("regressionLogs", "w");
 }
 
 void GaussianRegression::addMeasurement(Position x_prime, int boutCount)
@@ -155,9 +159,27 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		return meanPos;
 	else
 	{
+		int old_x = currentPosition.getX();
+		int old_y = currentPosition.getY();
+
 		currentPosition.setX(new_pos_x);
 		currentPosition.setY(new_pos_y);
 		updatePosToNearestFreeCell(&currentPosition);
+		currentPosition.setOrientation(atan2(currentPosition.getY() - old_y, currentPosition.getX() - old_x));
+
+#ifdef DEBUG
+		fprintf(logFile, "Wind direction: %f\n", kernel->getWind().getDirection());
+		fprintf(logFile, "Wind speed: %f\n", kernel->getWind().getSpeed());
+		printMeanMap();
+		printVarianceMap();
+		fprintf(logFile, "Initial new pos: %f %f\n", new_pos_x, new_pos_y);
+		fprintf(logFile, "After checking obstacles: %f %f\n", currentPosition.getX(), currentPosition.getY());
+
+		printf("Initial new pos: %f %f\n", new_pos_x, new_pos_y);
+		printf("After checking obstacles: %f %f\n", currentPosition.getX(), currentPosition.getY());
+#endif
+
+
 		return currentPosition;
 	}
 
@@ -167,16 +189,17 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 {
 	int x = position->getX();
 	int y = position->getY();
+	Position origin = gmap->getOrigin();
 
 	for (int k = 0; x + k < gmap->getWidth() || y + k < gmap->getHeight(); k++)
 		for (int i = -k; i <= k; i += k)
 		{
-			if (x + k < gmap->getWidth() && x - k >= 0)
+			if (x + k < origin.getX() + gmap->getWidth() && x + k >= origin.getX())
 				position->setX(x + k);
 
 			for (int j = -k; j <= k; j += k)
 			{
-				if (y + k < gmap->getHeight() && y - k >= 0)
+				if (y + k < origin.getY() + gmap->getHeight() && y + k >= origin.getY())
 					position->setY(y + k);
 				if (!gmap->isOccupied(*position) && !isExplored(*position))
 					return;
@@ -214,29 +237,53 @@ double GaussianRegression::varDirGaussF(double theta)
 
 
 
-void GaussianRegression::writeMeanMap(FILE * logFile)
+void GaussianRegression::printMeanMap()
 {
-	printf("Mean map\n");
+	fprintf(logFile, "Mean map\n");
 
-	for (float i = 0; i < ENV_X; i += STEP_SIZE)
+	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
 	{
-		for (float j = 0; j < ENV_Y; j += STEP_SIZE)
+		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getHeight(); j += STEP_SIZE)
 		{
-			Position x(i, j, 3);
+			Position x(i, j);
 			if (!isExplored(x))
-				printf("%lf ", mean(x));
+				fprintf(logFile, "%lf,", mean(x));
 			else
 			{
 				int index = 0;
 				for (list<Position>::iterator x_it = X.begin(); x_it != X.end(); x_it++)
 				{
 					if (x.equals(*x_it))
-						printf("%lf ", y.row(index)(0));
+						fprintf(logFile, "%lf,", y.row(index)(0));
 					index++;
 				}
 			}
 		}
-		printf("\n");
+		fprintf(logFile, "\n");
 	}
+	fprintf(logFile, "\n\n");
+
+}
+
+void GaussianRegression::printVarianceMap()
+{
+	fprintf(logFile, "Variance map\n");
+
+	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
+	{
+		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getHeight(); j += STEP_SIZE)
+		{
+			Position x(i, j);
+			fprintf(logFile, "%lf,", variance(x));
+		}
+		fprintf(logFile, "\n");
+	}
+	fprintf(logFile, "\n\n");
+}
+
+GaussianRegression::~GaussianRegression()
+{
+	if (logFile)
+		fclose(logFile);
 }
 
