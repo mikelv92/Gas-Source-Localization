@@ -115,6 +115,9 @@ Position GaussianRegression::nextBestPosition()
 			maxVariance = it->second;
 		}
 
+
+	printf("Before updateCurrentPosition. So far so good\n");
+
 	return updateCurrentPosition(maxMeanPos, maxVariancePos);
 }
 
@@ -164,7 +167,10 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 		currentPosition.setX(new_pos_x);
 		currentPosition.setY(new_pos_y);
+
+		printf("Before UpdatePosToNearestCell. \n");
 		updatePosToNearestFreeCell(&currentPosition);
+		printf("After\n");
 		currentPosition.setOrientation(atan2(currentPosition.getY() - old_y, currentPosition.getX() - old_x));
 
 #ifdef DEBUG
