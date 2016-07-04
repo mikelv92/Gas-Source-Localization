@@ -115,9 +115,6 @@ Position GaussianRegression::nextBestPosition()
 			maxVariance = it->second;
 		}
 
-
-	printf("Before updateCurrentPosition. So far so good\n");
-
 	return updateCurrentPosition(maxMeanPos, maxVariancePos);
 }
 
@@ -168,16 +165,19 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		currentPosition.setX(new_pos_x);
 		currentPosition.setY(new_pos_y);
 
-		printf("Before UpdatePosToNearestCell. \n");
 		updatePosToNearestFreeCell(&currentPosition);
-		printf("After\n");
 		currentPosition.setOrientation(atan2(currentPosition.getY() - old_y, currentPosition.getX() - old_x));
 
 #ifdef DEBUG
+		printf("Wind direction: %f\n", kernel->getWind().getDirection());
+		printf("Wind speed: %f\n", kernel->getWind().getSpeed());
+
 		fprintf(logFile, "Wind direction: %f\n", kernel->getWind().getDirection());
 		fprintf(logFile, "Wind speed: %f\n", kernel->getWind().getSpeed());
+
 		printMeanMap();
 		printVarianceMap();
+
 		fprintf(logFile, "Initial new pos: %f %f\n", new_pos_x, new_pos_y);
 		fprintf(logFile, "After checking obstacles: %f %f\n", currentPosition.getX(), currentPosition.getY());
 
@@ -215,9 +215,13 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 
 bool GaussianRegression::isExplored(Position x_new)
 {
+	printf("x_new: %f %f\n", x_new.getX(), x_new.getY());
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
+	{
+		printf("x: %f %f\n", x->getX(), x->getY());
 		if (x_new.equals(*x))
 			return true;
+	}
 	return false;
 }
 
@@ -251,6 +255,7 @@ void GaussianRegression::printMeanMap()
 	{
 		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getHeight(); j += STEP_SIZE)
 		{
+			printf("Entered the loop %f %f\n", i, j);
 			Position x(i, j);
 			if (!isExplored(x))
 				fprintf(logFile, "%lf,", mean(x));

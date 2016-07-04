@@ -55,8 +55,8 @@ public:
 	inline bool operator<(const Position & pos) const
 	{
 		return this->getX() < pos.getX() ||
-				(this->getX() == pos.getX() && this->getY() < pos.getY()) ||
-				(this->getX() == pos.getX() && this->getY() == pos.getY() && this->getZ() < pos.getZ());
+				(this->getX() == pos.getX() && this->getY() < pos.getY());
+		//|| (this->getX() == pos.getX() && this->getY() == pos.getY() && this->getZ() < pos.getZ());
 	}
 
 	float getOrientation() const {
