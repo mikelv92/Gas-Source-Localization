@@ -18,7 +18,7 @@
 class WindAvg {
 private:
 	double * windSpeedSamplesR;
-	int * windDirectionSamplesR;
+	double * windDirectionSamplesR;
 	Wind * windSamples;
 	int windIndex;
 	int windSpeedIndexR;
@@ -29,11 +29,11 @@ public:
 	WindAvg();
 	void resetSamples();
 	Wind getWindAverage();
-	int getDirectionAverage();
+	double getDirectionAverage();
 	double getSpeedAverage();
 	void addSample(Wind sample);
 	void addSpeedSampleR(double sample);
-	void addDirectionSampleR(int sample);
+	void addDirectionSampleR(double sample);
 
 	bool isSignalArrayFull();
 	void printR();

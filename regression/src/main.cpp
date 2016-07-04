@@ -93,11 +93,13 @@ int main(int argc, char** argv)
 		{
 			int boutCount = bout.getBoutCount(S1);
 			resetSamples(&bout, &windAvg);
+            ROS_INFO("Finished computing bouts: %d", boutCount);
 
 			double windDirection = windAvg.getDirectionAverage() * M_PI / 180;
+            ROS_INFO("Wind direction: %f", windDirection);
 
 			//Add
-			Wind w = Wind(windAvg.getSpeedAverage(), windDirection + datahandler.getRobotOrientation());
+			Wind w = Wind(windAvg.getSpeedAverage(), windDirection + datahandler.getCurrentPosition().getOrientation());
 
 			KernelFunction kernelFunction(w);
 			gaussianRegression.setKernel(&kernelFunction);
@@ -105,7 +107,7 @@ int main(int argc, char** argv)
 
 			Position newPosition = gaussianRegression.nextBestPosition();
 			moveBase(newPosition);
-			currentPosition = newPosition;
+			currentPosition = datahandler.getCurrentPosition();
 		}
 
 

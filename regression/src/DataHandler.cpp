@@ -73,7 +73,11 @@ void DataHandler::gmap_callback(const nav_msgs::OccupancyGrid gmap_msg)
 
 void DataHandler::ndt_mcl_callback(const nav_msgs::Odometry ndt_mcl_msg)
 {
+	double x				= (double)ndt_mcl_msg.pose.pose.position.x;
+	double y 				= (double)ndt_mcl_msg.pose.pose.position.y;
 	double sin_theta_half = (double)ndt_mcl_msg.pose.pose.orientation.z;
 	double cos_theta_half = (double)ndt_mcl_msg.pose.pose.orientation.w;
-	robotOrientation = 2 * atan2(sin_theta_half, cos_theta_half);
+
+	currentPosition = Position(x, y);
+	currentPosition.setOrientation(2 * atan2(sin_theta_half, cos_theta_half));
 }

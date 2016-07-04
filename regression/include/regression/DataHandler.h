@@ -23,6 +23,7 @@ private:
 	WindAvg * windAvg;
 	GMap * gmap;
 	double robotOrientation;
+	Position currentPosition;
 public:
 	DataHandler(Bout * bout, WindAvg * windAvg, GMap * gmap);
 	void pid_callback(const std_msgs::Float32::ConstPtr& pid_msg);
@@ -32,8 +33,8 @@ public:
 	void gmap_callback(const nav_msgs::OccupancyGrid gmap_msg);
 	void ndt_mcl_callback(const nav_msgs::Odometry ndt_mcl_msg);
 
-	double getRobotOrientation() const {
-		return robotOrientation;
+	const Position& getCurrentPosition() const {
+		return currentPosition;
 	}
 };
 

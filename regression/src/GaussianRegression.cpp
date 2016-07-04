@@ -13,7 +13,7 @@ GaussianRegression::GaussianRegression()
 {
 	K = MatrixXd(0, 0);
 	alpha = 1;
-	currentPosition = Position(0, 0, 0);
+	currentPosition = Position(0, 0);
 	meanAngle = 0;
 	varAngle = 0;
 
@@ -86,7 +86,7 @@ Position GaussianRegression::nextBestPosition()
 	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
 		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getWidth(); j += STEP_SIZE)
 		{
-			Position x(i, j, 3);
+			Position x(i, j);
 
 			if (!isExplored(x))
 			{
@@ -150,8 +150,8 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		angle = var_nor();
 	}
 
-	int new_pos_x = floor(currentPosition.getX() + RHO * cos((double)angle * M_PI / 180));
-	int new_pos_y = floor(currentPosition.getY() + RHO * sin((double)angle * M_PI / 180));
+	float new_pos_x = floor(currentPosition.getX() + RHO * cos((double)angle * M_PI / 180));
+	float new_pos_y = floor(currentPosition.getY() + RHO * sin((double)angle * M_PI / 180));
 
 	alpha *= 0.99;
 
@@ -159,8 +159,8 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		return meanPos;
 	else
 	{
-		int old_x = currentPosition.getX();
-		int old_y = currentPosition.getY();
+		float old_x = currentPosition.getX();
+		float old_y = currentPosition.getY();
 
 		currentPosition.setX(new_pos_x);
 		currentPosition.setY(new_pos_y);
@@ -216,13 +216,10 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 
 bool GaussianRegression::isExplored(Position x_new)
 {
-	printf("x_new: %f %f\n", x_new.getX(), x_new.getY());
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 	{
-		printf("x: %f %f\n", x->getX(), x->getY());
 		if (x_new.equals(*x))
 			return true;
-		printf("After if\n");
 	}
 	return false;
 }
