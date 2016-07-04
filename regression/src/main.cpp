@@ -96,10 +96,9 @@ int main(int argc, char** argv)
 			currentPosition = datahandler.getCurrentPosition();
 
 			int boutCount = bout.getBoutCount(S1);
-			resetSamples(&bout, &windAvg);
             ROS_INFO("Finished computing bouts: %d", boutCount);
 
-			double windDirection = windAvg.getDirectionAverage() * M_PI / 180;
+			double windDirection = windAvg.getDirectionAverage();
             ROS_INFO("Wind direction: %lf", windDirection);
             ROS_INFO("Robot + wind: %lf", windDirection + datahandler.getCurrentPosition().getOrientation());
 

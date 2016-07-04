@@ -76,7 +76,8 @@ KernelFunction::KernelFunction(Wind w) {
 
 double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 {
-	Position diff = pos_x.diff(pos_x_prime);
+//	Position diff = pos_x.diff(pos_x_prime);
+	Position diff = pos_x_prime.diff(pos_x);
 	double x = diff.getX();
 	double y = diff.getY();
 
@@ -112,14 +113,14 @@ bool KernelFunction::isUpwind(Position diff)
 
 
 	double angle = atan2(det, dot);
-	return angle > M_PI / 2 || angle < -1 * M_PI / 2;
+	return angle > M_PI / 2 || angle < -M_PI / 2;
 	*/
 
 	// Windsonic upwind computation
 	double diffAngle = atan2(diff.getY(), diff.getX());
 
-	double angle = diffAngle - wind.getDirection() * M_PI / 180;
-	return angle < M_PI / 2 && angle > -1 * M_PI / 2;
+	double angle = diffAngle - wind.getDirection();
+	return angle < M_PI / 2 && angle > -M_PI / 2;
 }
 
 void KernelFunction::invertMatrix(double **matrix)

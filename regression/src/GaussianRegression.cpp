@@ -161,8 +161,8 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 	}
 
-	float new_pos_x = floor(currentPosition.getX() + RHO * cos((double)angle * M_PI / 180));
-	float new_pos_y = floor(currentPosition.getY() + RHO * sin((double)angle * M_PI / 180));
+	float new_pos_x = floor(currentPosition.getX() + RHO * cos(angle));
+	float new_pos_y = floor(currentPosition.getY() + RHO * sin(angle));
 
 	alpha *= 0.99;
 

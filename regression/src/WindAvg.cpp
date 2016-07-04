@@ -59,7 +59,7 @@ void WindAvg::addDirectionSampleR(double sample)
 {
 	if (windDirectionIndexR < WIND_R_SIGNAL_LEN)
 	{
-		windDirectionSamplesR[windDirectionIndexR] = sample;
+		windDirectionSamplesR[windDirectionIndexR] = sample * M_PI / 180;
 		windDirectionIndexR++;
 	}
 	else
