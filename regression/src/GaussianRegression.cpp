@@ -83,8 +83,8 @@ Position GaussianRegression::nextBestPosition()
 	map<Position, double> meanMap;
 	map<Position, double> varianceMap;
 
-	for (float i = 0; i < ENV_X; i += STEP_SIZE)
-		for (float j = 0; j < ENV_Y; j += STEP_SIZE)
+	for (float i = gmap->getOrigin().getX; i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
+		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getWidth(); j += STEP_SIZE)
 		{
 			Position x(i, j, 3);
 
@@ -221,6 +221,7 @@ bool GaussianRegression::isExplored(Position x_new)
 		printf("x: %f %f\n", x->getX(), x->getY());
 		if (x_new.equals(*x))
 			return true;
+		printf("After if\n");
 	}
 	return false;
 }
@@ -255,7 +256,6 @@ void GaussianRegression::printMeanMap()
 	{
 		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getHeight(); j += STEP_SIZE)
 		{
-			printf("Entered the loop %f %f\n", i, j);
 			Position x(i, j);
 			if (!isExplored(x))
 				fprintf(logFile, "%lf,", mean(x));
