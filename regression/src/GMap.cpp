@@ -52,6 +52,12 @@ bool GMap::isInitialized()
 	return this->_isInit;
 }
 
+bool GMap::isWithinBounds(Position position)
+{
+	return position.getX() < origin.getX() + width && position.getX() >= origin.getX()
+			&& position.getY() < origin.getY() + height && position.getY() >= origin.getY();
+}
+
 GMap::~GMap() {
 	for (int i = 0; i < this->width; i++)
 		if (occupancyGrid[i])

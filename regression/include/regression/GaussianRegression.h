@@ -32,6 +32,8 @@
 #define MEAN_GAUSS_VARIANCE 2.0
 #define VAR_GAUSS_VARIANCE 2.0
 #define ALPHA_THRESHOLD 0.1
+#define EXPLORE_X 50
+#define EXPLORE_Y 50
 
 using namespace Eigen;
 using namespace std;

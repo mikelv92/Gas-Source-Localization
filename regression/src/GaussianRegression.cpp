@@ -83,15 +83,17 @@ Position GaussianRegression::nextBestPosition()
 	map<Position, double> meanMap;
 	map<Position, double> varianceMap;
 
-	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
-		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getWidth(); j += STEP_SIZE)
+	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
+		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
 		{
 			Position x(i, j);
-
-			if (!isExplored(x))
+			if (gmap->isWithinBounds(x))
 			{
-				meanMap[x] = mean(x);
-				varianceMap[x] = variance(x);
+				if (!isExplored(x))
+				{
+					meanMap[x] = mean(x);
+					varianceMap[x] = variance(x);
+				}
 			}
 		}
 

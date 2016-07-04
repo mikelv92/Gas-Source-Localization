@@ -36,6 +36,7 @@ public:
 				int * data
 			);
 	bool isOccupied(Position position);
+	bool isWithinBounds(Position position);
 	bool isInitialized();
 	virtual ~GMap();
 

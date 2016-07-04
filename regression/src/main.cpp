@@ -91,6 +91,8 @@ int main(int argc, char** argv)
 				gmap.isInitialized()
 			)
 		{
+			currentPosition = datahandler.getCurrentPosition();
+
 			int boutCount = bout.getBoutCount(S1);
 			resetSamples(&bout, &windAvg);
             ROS_INFO("Finished computing bouts: %d", boutCount);
@@ -107,7 +109,6 @@ int main(int argc, char** argv)
 
 			Position newPosition = gaussianRegression.nextBestPosition();
 			moveBase(newPosition);
-			currentPosition = datahandler.getCurrentPosition();
 		}
 
 
