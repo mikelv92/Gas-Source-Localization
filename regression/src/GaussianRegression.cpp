@@ -178,11 +178,12 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		printMeanMap();
 		printVarianceMap();
 
+		printf("Initial new pos: %f %f\n", new_pos_x, new_pos_y);
+		printf("After checking obstacles: %f %f\n", currentPosition.getX(), currentPosition.getY());
+
 		fprintf(logFile, "Initial new pos: %f %f\n", new_pos_x, new_pos_y);
 		fprintf(logFile, "After checking obstacles: %f %f\n", currentPosition.getX(), currentPosition.getY());
 
-		printf("Initial new pos: %f %f\n", new_pos_x, new_pos_y);
-		printf("After checking obstacles: %f %f\n", currentPosition.getX(), currentPosition.getY());
 #endif
 
 
