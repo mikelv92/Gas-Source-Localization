@@ -7,7 +7,6 @@
 
 #include "regression/GaussianRegression.h"
 
-#define DEBUG
 
 GaussianRegression::GaussianRegression()
 {
@@ -143,6 +142,10 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		variate_generator<mt19937&, normal_distribution<double> > var_nor(gen, distribution);
 		angle = var_nor();
 
+#ifdef DEBUG
+		printf("Chose mean gaussian. Theta: %lf\n", angle);
+		fprintf(logFile, "Chose mean gaussian. Theta: %lf\n", angle);
+#endif
 	}
 	else
 	{
@@ -150,6 +153,12 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		normal_distribution<double> distribution(varAngle, VAR_GAUSS_VARIANCE);
 		variate_generator<mt19937&, normal_distribution<double> > var_nor(gen, distribution);
 		angle = var_nor();
+
+#ifdef DEBUG
+		printf("Chose variance gaussian. Theta: %lf\n", angle);
+		fprintf(logFile, "Chose variance gaussian. Theta: %lf\n", angle);
+#endif
+
 	}
 
 	float new_pos_x = floor(currentPosition.getX() + RHO * cos((double)angle * M_PI / 180));
@@ -252,37 +261,39 @@ void GaussianRegression::printMeanMap()
 {
 	fprintf(logFile, "Mean map\n");
 
-	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
+	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 	{
-		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getHeight(); j += STEP_SIZE)
+		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
 		{
 			Position x(i, j);
-			if (!isExplored(x))
-				fprintf(logFile, "%lf,", mean(x));
-			else
+			if (gmap->isWithinBounds(x))
 			{
-				int index = 0;
-				for (list<Position>::iterator x_it = X.begin(); x_it != X.end(); x_it++)
+				if (!isExplored(x))
+					fprintf(logFile, "%lf,", mean(x));
+				else
 				{
-					if (x.equals(*x_it))
-						fprintf(logFile, "%lf,", y.row(index)(0));
-					index++;
+					int index = 0;
+					for (list<Position>::iterator x_it = X.begin(); x_it != X.end(); x_it++)
+					{
+						if (x.equals(*x_it))
+							fprintf(logFile, "%lf,", y.row(index)(0));
+						index++;
+					}
 				}
 			}
 		}
 		fprintf(logFile, "\n");
 	}
 	fprintf(logFile, "\n\n");
-
 }
 
 void GaussianRegression::printVarianceMap()
 {
 	fprintf(logFile, "Variance map\n");
 
-	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
+	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 	{
-		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getHeight(); j += STEP_SIZE)
+		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
 		{
 			Position x(i, j);
 			fprintf(logFile, "%lf,", variance(x));
