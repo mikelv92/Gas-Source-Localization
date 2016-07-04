@@ -83,7 +83,7 @@ Position GaussianRegression::nextBestPosition()
 	map<Position, double> meanMap;
 	map<Position, double> varianceMap;
 
-	for (float i = gmap->getOrigin().getX; i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
+	for (float i = gmap->getOrigin().getX(); i < gmap->getOrigin().getX() + gmap->getWidth(); i += STEP_SIZE)
 		for (float j = gmap->getOrigin().getY(); j < gmap->getOrigin().getY() + gmap->getWidth(); j += STEP_SIZE)
 		{
 			Position x(i, j, 3);
