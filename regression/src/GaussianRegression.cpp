@@ -12,7 +12,7 @@
 GaussianRegression::GaussianRegression()
 {
 	K = MatrixXd(0, 0);
-	alpha = 1;
+	alpha = 0.09;
 	currentPosition = Position(0, 0);
 	meanAngle = 0;
 	varAngle = 0;
