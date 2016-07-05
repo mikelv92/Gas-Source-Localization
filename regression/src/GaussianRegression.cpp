@@ -7,6 +7,7 @@
 
 #include "regression/GaussianRegression.h"
 
+#define DEBUG
 
 GaussianRegression::GaussianRegression()
 {
