@@ -65,7 +65,7 @@ KernelFunction::KernelFunction(Wind w) {
 	sigmaDownwind[1] = (double *)malloc(2 * sizeof(double));
 
 
-	sigmaDownwind[0][0] = 1 / semiMajorAxis * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
+	sigmaDownwind[0][0] = semiMajorAxis / 10 * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
 	sigmaDownwind[0][1] = semiMinorAxis * cos_alpha * sin_alpha - 1 / semiMajorAxis * cos_alpha * sin_alpha;
 	sigmaDownwind[1][0] = semiMinorAxis * cos_alpha * sin_alpha - 1 / semiMajorAxis * cos_alpha * sin_alpha;
 	sigmaDownwind[1][1] = semiMinorAxis * cos_alpha * cos_alpha + 1 / semiMajorAxis * sin_alpha * sin_alpha;
