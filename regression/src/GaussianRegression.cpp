@@ -122,21 +122,15 @@ Position GaussianRegression::nextBestPosition()
 
 Position GaussianRegression::updateCurrentPosition(Position meanPos, Position varPos)
 {
-	double dot = 0, det = 0;
-
 	//angle of meanPos wrt x axis [1 0]
-	dot 				= meanPos.getX() * 1 + meanPos.getY() * 0;
-	det 				= meanPos.getX() * 0 - meanPos.getY() * 1;
-	meanAngle 	= atan2(det, dot);
+	meanAngle 	= atan2(meanPos.getY(), meanPos.getX());
 
 	//angle of varPos wrt x axis [1 0]
-	dot 				= varPos.getX() * 1 + varPos.getY() * 0;
-	det 				= varPos.getX() * 0 - varPos.getY() * 1;
-	varAngle 	= atan2(det, dot);
+	varAngle 	= atan2(varPos.getY(), varPos.getX());
 
 	double angle;
 
-	if ((double)(rand() / RAND_MAX) > alpha)
+	if (((double)rand() / (double)RAND_MAX) > alpha)
 	{
 		mt19937 gen;
 		normal_distribution<double> distribution(meanAngle, MEAN_GAUSS_VARIANCE);
@@ -168,7 +162,7 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	alpha *= 0.99;
 
 	if (alpha < ALPHA_THRESHOLD)
-		return meanPos;
+		return meanPos; //FIXME TODO have to send the robot to the highest bout count. Not necessarily meanpos because meanpos doesn't include explored cells.
 	else
 	{
 		float old_x = currentPosition.getX();
@@ -228,10 +222,16 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 
 bool GaussianRegression::isExplored(Position x_new)
 {
+	printf("Explored list: \n");
+	printf("x_new: %lf %lf\n", x_new.getX(), x_new.getY());
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 	{
+		printf("%lf %lf\n", x->getX(), x->getY());
 		if (x_new.equals(*x))
+		{
+			printf("Found!\n");
 			return true;
+		}
 	}
 	return false;
 }

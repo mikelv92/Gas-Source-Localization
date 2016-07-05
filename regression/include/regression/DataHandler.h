@@ -22,7 +22,6 @@ private:
 	Bout * bout;
 	WindAvg * windAvg;
 	GMap * gmap;
-	double robotOrientation;
 	Position currentPosition;
 public:
 	DataHandler(Bout * bout, WindAvg * windAvg, GMap * gmap);

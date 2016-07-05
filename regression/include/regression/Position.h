@@ -12,11 +12,11 @@ class Position {
 private:
 	float x;
 	float y;
-	float z;
+	//float z;
 	float orientation; //radians
 public:
 	Position() {};
-	Position(float x, float y, float z = 0) : x(x), y(y), z(z) {};
+	Position(float x, float y) : x(x), y(y), orientation(0) {};
 
 	float getX() const {
 		return x;
@@ -34,14 +34,6 @@ public:
 		this->y = y;
 	}
 
-	float getZ() const {
-		return z;
-	}
-
-	void setZ(float z) {
-		this->z = z;
-	}
-
 	Position diff(Position pos)
 	{
 		return Position(this->getX() - pos.getX(), this->getY() - pos.getY());
@@ -49,7 +41,7 @@ public:
 
 	bool equals(Position pos)
 	{
-		return this->x == pos.getX() && this->y == pos.getY() && this->z == pos.getZ();
+		return this->x == pos.getX() && this->y == pos.getY();
 	}
 
 	inline bool operator<(const Position & pos) const
