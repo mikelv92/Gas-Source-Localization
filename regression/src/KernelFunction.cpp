@@ -76,8 +76,7 @@ KernelFunction::KernelFunction(Wind w) {
 
 double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 {
-//	Position diff = pos_x.diff(pos_x_prime);
-	Position diff = pos_x_prime.diff(pos_x);
+	Position diff = pos_x.diff(pos_x_prime);
 	double x = diff.getX();
 	double y = diff.getY();
 

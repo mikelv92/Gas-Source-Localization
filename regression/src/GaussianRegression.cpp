@@ -261,11 +261,11 @@ void GaussianRegression::printMeanMap()
 {
 	fprintf(logFile, "Mean map\n");
 
-	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
+	for (float i = currentPosition.getY() - EXPLORE_Y; i < currentPosition.getY() + EXPLORE_Y; i += STEP_SIZE)
 	{
-		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
+		for (float j = currentPosition.getX() - EXPLORE_X; j < currentPosition.getX() + EXPLORE_X; j += STEP_SIZE)
 		{
-			Position x(i, j);
+			Position x(j, i);
 			if (gmap->isWithinBounds(x))
 			{
 				if (!isExplored(x))
@@ -291,11 +291,11 @@ void GaussianRegression::printVarianceMap()
 {
 	fprintf(logFile, "Variance map\n");
 
-	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
+	for (float i = currentPosition.getY() - EXPLORE_Y; i < currentPosition.getY() + EXPLORE_Y; i += STEP_SIZE)
 	{
-		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
+		for (float j = currentPosition.getX() - EXPLORE_X; j < currentPosition.getX() + EXPLORE_X; j += STEP_SIZE)
 		{
-			Position x(i, j);
+			Position x(j, i);
 			fprintf(logFile, "%lf,", variance(x));
 		}
 		fprintf(logFile, "\n");
