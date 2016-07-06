@@ -30,7 +30,8 @@ KernelFunction::KernelFunction(Wind w) {
 
 	// Windsonic angle
 	// For some reason maybe we have to add pi/2?
-	double windDirection = Utilities::wrapAngle(wind.getDirection() + M_PI/2);
+	// Negative because the reference is contrary to the robot
+	double windDirection = Utilities::wrapAngle(-(wind.getDirection() + M_PI/2));
 
 	double cos_alpha = cos(windDirection);
 	double sin_alpha = sin(windDirection);
