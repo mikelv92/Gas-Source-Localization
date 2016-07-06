@@ -12,7 +12,7 @@
 GaussianRegression::GaussianRegression()
 {
 	K = MatrixXd(0, 0);
-	alpha = 0.09;
+	alpha = 0.12;
 	currentPosition = Position(0, 0);
 	meanAngle = 0;
 	varAngle = 0;
@@ -159,7 +159,7 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	float new_pos_x = currentPosition.getX() + RHO * cos(angle);
 	float new_pos_y = currentPosition.getY() + RHO * sin(angle);
 
-	alpha *= 0.99;
+	//alpha *= 0.99;
 
 	if (alpha < ALPHA_THRESHOLD)
 		return meanPos; //FIXME TODO have to send the robot to the highest bout count. Not necessarily meanpos because meanpos doesn't include explored cells.
@@ -222,11 +222,8 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 
 bool GaussianRegression::isExplored(Position x_new)
 {
-	printf("Explored list: \n");
-	printf("x_new: %lf %lf\n", x_new.getX(), x_new.getY());
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 	{
-		printf("%lf %lf\n", x->getX(), x->getY());
 		if (x_new.equals(*x))
 		{
 			printf("Found!\n");

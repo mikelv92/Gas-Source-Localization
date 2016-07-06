@@ -20,8 +20,8 @@ public:
 	Position() {};
 	Position(float x, float y) {
 		// Round
-		this->x = x > 0 ? floor(x + 0.5) : floor(x - 0.5);
-		this->y = y > 0 ? floor(y + 0.5) : floor(y - 0.5);
+		this->x = x > 0 ? floor(x + 0.5) : ceil(x - 0.5);
+		this->y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
 		this->orientation = 0;
 	}
 
@@ -30,7 +30,7 @@ public:
 	}
 
 	void setX(float x) {
-		this->x = x > 0 ? floor(x + 0.5) : floor(x - 0.5);
+		this->x = x > 0 ? floor(x + 0.5) : ceil(x - 0.5);
 	}
 
 	float getY() const {
@@ -38,7 +38,7 @@ public:
 	}
 
 	void setY(float y) {
-		this->y = y > 0 ? floor(y + 0.5) : floor(y - 0.5);
+		this->y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
 	}
 
 	Position diff(Position pos)

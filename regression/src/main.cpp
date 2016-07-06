@@ -94,6 +94,7 @@ int main(int argc, char** argv)
 			)
 		{
 			currentPosition = datahandler.getCurrentPosition();
+            ROS_INFO("Current position: %lf %lf", currentPosition.getX(), currentPosition.getY());
 
 			int boutCount = bout.getBoutCount(S1);
             ROS_INFO("Finished computing bouts: %d", boutCount);
@@ -110,7 +111,9 @@ int main(int argc, char** argv)
 			gaussianRegression.addMeasurement(currentPosition, boutCount);
 
 			Position newPosition = gaussianRegression.nextBestPosition();
-			moveBase(newPosition);
+            ROS_INFO("New position: %lf %lf", newPosition.getX(), newPosition.getY());
+
+			//moveBase(newPosition);
 			resetSamples(&bout, &windAvg);
 
 		}
