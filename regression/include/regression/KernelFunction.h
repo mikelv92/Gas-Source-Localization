@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include "regression/Wind.h"
 #include "regression/Position.h"
+#include "regression/Utilities.h"
 
 class KernelFunction {
 private:

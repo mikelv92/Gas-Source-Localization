@@ -30,8 +30,10 @@ KernelFunction::KernelFunction(Wind w) {
 
 	// Windsonic angle
 	// For some reason maybe we have to add pi/2?
-	double cos_alpha = cos(wind.getDirection() + M_PI / 2);
-	double sin_alpha = sin(wind.getDirection() + M_PI / 2);
+	double windDirection = Utilities::wrapAngle(wind.getDirection() + M_PI/2);
+
+	double cos_alpha = cos(windDirection);
+	double sin_alpha = sin(windDirection);
 
 	sigmaUpwind = (double **)malloc(2 * sizeof(double *));
 	sigmaUpwind[0] = (double *)malloc(2 * sizeof(double));
@@ -60,8 +62,8 @@ KernelFunction::KernelFunction(Wind w) {
 
 double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 {
-	//Position diff = pos_x.diff(pos_x_prime);
-	Position diff = pos_x_prime.diff(pos_x);
+	Position diff = pos_x.diff(pos_x_prime);
+	//Position diff = pos_x_prime.diff(pos_x);
 	double x = diff.getX();
 	double y = diff.getY();
 
@@ -90,25 +92,8 @@ double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 
 bool KernelFunction::isUpwind(Position diff)
 {
-	// Simulator upwind computation
-	/*
-	double dot = diff.getX() * wind.getU() + diff.getY() * wind.getV();
-	double det = diff.getX() * wind.getV() - diff.getY() * wind.getU();
-
-
-	double angle = atan2(det, dot);
-	return angle > M_PI / 2 || angle < -M_PI / 2;
-	*/
-
-	// Windsonic upwind computation
 	double diffAngle = atan2(diff.getY(), diff.getX());
-
-	// Wrap wind angle
-	double windAngle = wind.getDirection();
-	windAngle = fmod(windAngle + M_PI, 2 * M_PI);
-	if (windAngle < 0)
-		windAngle += 2 * M_PI;
-	windAngle -= M_PI;
+	double windAngle = Utilities::wrapAngle(wind.getDirection() + M_PI/2); // ?
 
 	double angle = diffAngle - windAngle;
 	return angle < M_PI / 2 && angle > -M_PI / 2;

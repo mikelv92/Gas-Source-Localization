@@ -78,6 +78,17 @@ public:
 		return area;
 	}
 
+	static double wrapAngle(double theta)
+	{
+		theta = fmod(theta + M_PI, 2 * M_PI);
+		if (theta < 0)
+			theta += 2 * M_PI;
+		theta -= M_PI;
+
+		return theta;
+
+	}
+
 
 
 
