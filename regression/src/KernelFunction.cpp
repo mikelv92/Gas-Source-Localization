@@ -45,7 +45,7 @@ KernelFunction::KernelFunction(Wind w) {
 
 
 	rotMatrix[0][0] = cos_alpha;
-	rotMatrix[0][1] = -1 * sin_alpha;
+	rotMatrix[0][1] = -sin_alpha;
 	rotMatrix[1][0] = sin_alpha;
 	rotMatrix[1][1] = cos_alpha;
 
@@ -76,7 +76,8 @@ KernelFunction::KernelFunction(Wind w) {
 
 double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 {
-	Position diff = pos_x.diff(pos_x_prime);
+	//Position diff = pos_x.diff(pos_x_prime);
+	Position diff = pos_x_prime.diff(pos_x);
 	double x = diff.getX();
 	double y = diff.getY();
 

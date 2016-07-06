@@ -101,10 +101,10 @@ int main(int argc, char** argv)
 
 			double windDirection = windAvg.getDirectionAverage();
             ROS_INFO("Wind direction: %lf", windDirection);
-            ROS_INFO("Robot + wind: %lf", windDirection - datahandler.getCurrentPosition().getOrientation());
+            ROS_INFO("Robot + wind: %lf", windDirection - currentPosition.getOrientation());
 
 			//Add
-			Wind w = Wind(windAvg.getSpeedAverage(), windDirection - datahandler.getCurrentPosition().getOrientation());
+			Wind w = Wind(windAvg.getSpeedAverage(), windDirection - currentPosition.getOrientation());
 
 			KernelFunction kernelFunction(w);
 			gaussianRegression.setKernel(&kernelFunction);
