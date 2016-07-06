@@ -8,6 +8,8 @@
 #ifndef REGRESSION_SRC_POSITION_H_
 #define REGRESSION_SRC_POSITION_H_
 
+#include <math.h>
+
 class Position {
 private:
 	float x;
@@ -16,14 +18,19 @@ private:
 	float orientation; //radians
 public:
 	Position() {};
-	Position(float x, float y) : x(x), y(y), orientation(0) {};
+	Position(float x, float y) {
+		// Round
+		this->x = x > 0 ? floor(x + 0.5) : floor(x - 0.5);
+		this->y = y > 0 ? floor(y + 0.5) : floor(y - 0.5);
+		this->orientation = 0;
+	}
 
 	float getX() const {
 		return x;
 	}
 
 	void setX(float x) {
-		this->x = x;
+		this->x = x > 0 ? floor(x + 0.5) : floor(x - 0.5);
 	}
 
 	float getY() const {
@@ -31,7 +38,7 @@ public:
 	}
 
 	void setY(float y) {
-		this->y = y;
+		this->y = y > 0 ? floor(y + 0.5) : floor(y - 0.5);
 	}
 
 	Position diff(Position pos)
