@@ -21,16 +21,6 @@ KernelFunction::KernelFunction(Wind w) {
 	semiMajorAxis = SPATIAL_SCALE + WIND_SCALE * wind.getSpeed();
 	semiMinorAxis = SPATIAL_SCALE / (1 + (WIND_SCALE * wind.getSpeed()) / SPATIAL_SCALE);
 
-	sigma0Upwind[0][0] = semiMajorAxis;
-	sigma0Upwind[0][1] = 0;
-	sigma0Upwind[1][0] = 0;
-	sigma0Upwind[1][1] = semiMinorAxis;
-
-	sigma0Downwind[0][0] = 1 / semiMajorAxis;
-	sigma0Downwind[0][1] = 0;
-	sigma0Downwind[1][0] = 0;
-	sigma0Downwind[1][1] = semiMinorAxis;
-
 	// Simulator angle
 	/*
 	//alpha is the angle of the wind direction wrt the vector [ 0 1 ]
@@ -39,15 +29,9 @@ KernelFunction::KernelFunction(Wind w) {
 	 */
 
 	// Windsonic angle
-	double cos_alpha = cos(wind.getDirection());
-	double sin_alpha = sin(wind.getDirection());
-
-
-
-	rotMatrix[0][0] = cos_alpha;
-	rotMatrix[0][1] = -sin_alpha;
-	rotMatrix[1][0] = sin_alpha;
-	rotMatrix[1][1] = cos_alpha;
+	// For some reason maybe we have to add pi/2?
+	double cos_alpha = cos(wind.getDirection() + M_PI / 2);
+	double sin_alpha = sin(wind.getDirection() + M_PI / 2);
 
 	sigmaUpwind = (double **)malloc(2 * sizeof(double *));
 	sigmaUpwind[0] = (double *)malloc(2 * sizeof(double));

@@ -23,11 +23,6 @@ private:
 	double semiMajorAxis;
 	double semiMinorAxis;
 
-	double sigma0Upwind[2][2];
-	double sigma0Downwind[2][2];
-
-	double rotMatrix[2][2];
-
 	double ** sigmaUpwind;
 	double ** sigmaDownwind;
 
