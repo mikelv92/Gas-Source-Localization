@@ -103,7 +103,14 @@ bool KernelFunction::isUpwind(Position diff)
 	// Windsonic upwind computation
 	double diffAngle = atan2(diff.getY(), diff.getX());
 
-	double angle = diffAngle - wind.getDirection();
+	// Wrap wind angle
+	double windAngle = wind.getDirection();
+	windAngle = fmod(windAngle + M_PI, 2 * M_PI);
+	if (windAngle < 0)
+		windAngle += 2 * M_PI;
+	windAngle -= M_PI;
+
+	double angle = diffAngle - windAngle;
 	return angle < M_PI / 2 && angle > -M_PI / 2;
 }
 
