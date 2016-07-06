@@ -122,10 +122,7 @@ Position GaussianRegression::nextBestPosition()
 
 Position GaussianRegression::updateCurrentPosition(Position meanPos, Position varPos)
 {
-	//angle of meanPos wrt x axis [1 0]
 	meanAngle 	= atan2(meanPos.getY(), meanPos.getX());
-
-	//angle of varPos wrt x axis [1 0]
 	varAngle 	= atan2(varPos.getY(), varPos.getX());
 
 	double angle;
@@ -223,13 +220,8 @@ void GaussianRegression::updatePosToNearestFreeCell(Position * position)
 bool GaussianRegression::isExplored(Position x_new)
 {
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
-	{
 		if (x_new.equals(*x))
-		{
-			printf("Found!\n");
 			return true;
-		}
-	}
 	return false;
 }
 
@@ -259,11 +251,11 @@ void GaussianRegression::printMeanMap()
 {
 	fprintf(logFile, "Mean map\n");
 
-	for (float i = currentPosition.getY() - EXPLORE_Y; i < currentPosition.getY() + EXPLORE_Y; i += STEP_SIZE)
+	for (float j = currentPosition.getY() + EXPLORE_Y; j > currentPosition.getY() - EXPLORE_Y; j -= STEP_SIZE)
 	{
-		for (float j = currentPosition.getX() - EXPLORE_X; j < currentPosition.getX() + EXPLORE_X; j += STEP_SIZE)
+		for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 		{
-			Position x(j, i);
+			Position x(i, j);
 			if (gmap->isWithinBounds(x))
 			{
 				if (!isExplored(x))
