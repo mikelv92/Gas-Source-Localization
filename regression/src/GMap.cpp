@@ -30,9 +30,9 @@ void GMap::init(unsigned int width,
 	for (int i = 0; i < width; i++)
 		occupancyGrid[i] = (int *)malloc(height * sizeof(int));
 
-	for (int i = 0; i < height; i++)
-		for (int j = 0; j < width; j++)
-			occupancyGrid[i][j] = data[width * i + j];
+	for (int j = 0; j < height; j++)
+		for (int i = 0; i < width; i++)
+			occupancyGrid[i][j] = data[width * j + i];
 
 	this->_isInit = true;
 }

@@ -27,8 +27,6 @@ private:
 	double semiMajorAxis;
 	double semiMinorAxis;
 
-//	double ** sigmaUpwind;
-//	double ** sigmaDownwind;
 	MatrixXd sigmaUpwind;
 	MatrixXd sigmaDownwind;
 
@@ -39,7 +37,6 @@ public:
 	KernelFunction(Wind w);
 
 	double getK(Position x, Position x_prime);
-	~KernelFunction();
 
 	const Wind& getWind() const {
 		return wind;

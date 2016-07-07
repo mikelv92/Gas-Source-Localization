@@ -44,37 +44,11 @@ KernelFunction::KernelFunction(Wind w) {
 	sigmaUpwind = rotMatrix * sigma0Upwind * rotMatrix.inverse();
 	sigmaDownwind = rotMatrix * sigma0Downwind * rotMatrix.inverse();
 
-/*
-	sigmaUpwind = (double **)malloc(2 * sizeof(double *));
-	sigmaUpwind[0] = (double *)malloc(2 * sizeof(double));
-	sigmaUpwind[1] = (double *)malloc(2 * sizeof(double));
-
-	sigmaUpwind[0][0] = semiMajorAxis * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
-	sigmaUpwind[0][1] = semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaUpwind[1][0] = semiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaUpwind[1][1] = semiMinorAxis * cos_alpha * cos_alpha + semiMajorAxis * sin_alpha * sin_alpha;
-
-	invertMatrix(sigmaUpwind);
-
-	sigmaDownwind = (double **)malloc(2 * sizeof(double *));
-	sigmaDownwind[0] = (double *)malloc(2 * sizeof(double));
-	sigmaDownwind[1] = (double *)malloc(2 * sizeof(double));
-
-	double downWindSemiMajorAxis = semiMajorAxis / 10;
-	sigmaDownwind[0][0] = downWindSemiMajorAxis * cos_alpha * cos_alpha + semiMinorAxis * sin_alpha * sin_alpha;
-	sigmaDownwind[0][1] = downWindSemiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaDownwind[1][0] = downWindSemiMajorAxis * cos_alpha * sin_alpha - semiMinorAxis * cos_alpha * sin_alpha;
-	sigmaDownwind[1][1] = semiMinorAxis * cos_alpha * cos_alpha + downWindSemiMajorAxis * sin_alpha * sin_alpha;
-
-	invertMatrix(sigmaDownwind);
-*/
-
 }
 
 double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 {
 	Position diff = pos_x.diff(pos_x_prime);
-	//Position diff = pos_x_prime.diff(pos_x);
 	double x = diff.getX();
 	double y = diff.getY();
 
@@ -85,32 +59,9 @@ double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 	double a, b, c, d;
 
 	if (isUpwind(diff))
-	{
-		//Upwind
-
 		return exp(-sqrt((double)(diffVec.transpose() * sigmaUpwind.inverse() * diffVec)(0)));
-/*
-		a = sigmaUpwind[0][0];
-		b = sigmaUpwind[0][1];
-		c = sigmaUpwind[1][0];
-		d = sigmaUpwind[1][1];
-*/
-	}
 	else
-	{
-		//Downwind
-
 		return exp(-sqrt((double)(diffVec.transpose() * sigmaDownwind.inverse() * diffVec)(0)));
-
-/*
-		a = sigmaDownwind[0][0];
-		b = sigmaDownwind[0][1];
-		c = sigmaDownwind[1][0];
-		d = sigmaDownwind[1][1];
-*/
-	}
-
-//	return exp(-1 * sqrt(a * x * x + (b + c) * x * y + d * y * y));
 
 }
 
@@ -138,23 +89,3 @@ void KernelFunction::invertMatrix(double **matrix)
 	matrix[1][1] = a / denom;
 
 }
-
-KernelFunction::~KernelFunction()
-{
-/*
-	if (sigmaDownwind)
-	{
-		free(sigmaDownwind[0]);
-		free(sigmaDownwind[1]);
-		free(sigmaDownwind);
-	}
-	if (sigmaUpwind)
-	{
-		free(sigmaUpwind[0]);
-		free(sigmaUpwind[1]);
-		free(sigmaUpwind);
-	}
-*/
-
-}
-
