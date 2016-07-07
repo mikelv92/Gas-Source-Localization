@@ -28,7 +28,7 @@ KernelFunction::KernelFunction(Wind w) {
 	rotMatrix(1, 1) = cos_alpha;
 
 	MatrixXd sigma0Upwind = MatrixXd(2, 2);
-	sigma0Upwind(0, 0) = semiMajorAxis * 10;
+	sigma0Upwind(0, 0) = semiMajorAxis * 10; //just to stretch a bit more. Should work without it also.
 	sigma0Upwind(0, 1) = 0;
 	sigma0Upwind(1, 0) = 0;
 	sigma0Upwind(1, 1) = semiMinorAxis;
@@ -116,11 +116,11 @@ double KernelFunction::getK(Position pos_x, Position pos_x_prime)
 
 bool KernelFunction::isUpwind(Position diff)
 {
-	double diffAngle = atan2(diff.getY(), diff.getX());
+	double diffAngle = Utilities::wrapAngle(atan2(diff.getY(), diff.getX()));
 	double windAngle = Utilities::wrapAngle(wind.getDirection()); // ?
 
-	double angle = diffAngle - windAngle;
-	return angle < M_PI / 2 && angle > -M_PI / 2;
+	double angle = Utilities::wrapAngle(diffAngle - windAngle);
+	return !(angle < M_PI / 2 && angle > -M_PI / 2);
 }
 
 void KernelFunction::invertMatrix(double **matrix)
