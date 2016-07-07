@@ -16,6 +16,9 @@
 #include "regression/Wind.h"
 #include "regression/Position.h"
 #include "regression/Utilities.h"
+#include <Eigen/Dense>
+
+using namespace Eigen;
 
 class KernelFunction {
 private:
@@ -24,8 +27,10 @@ private:
 	double semiMajorAxis;
 	double semiMinorAxis;
 
-	double ** sigmaUpwind;
-	double ** sigmaDownwind;
+//	double ** sigmaUpwind;
+//	double ** sigmaDownwind;
+	MatrixXd sigmaUpwind;
+	MatrixXd sigmaDownwind;
 
 	void invertMatrix(double ** matrix);
 	bool isUpwind(Position diff);

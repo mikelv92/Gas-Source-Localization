@@ -100,11 +100,13 @@ int main(int argc, char** argv)
             ROS_INFO("Finished computing bouts: %d", boutCount);
 
 			double windDirection = windAvg.getDirectionAverage();
-            ROS_INFO("Wind direction: %lf", windDirection);
-            ROS_INFO("Robot + wind: %lf", windDirection - currentPosition.getOrientation());
+            ROS_INFO("Wind direction: %lf", -windDirection);
+            ROS_INFO("Robot + wind: %lf", -windDirection + currentPosition.getOrientation());
 
 			//Add
-			Wind w = Wind(windAvg.getSpeedAverage(), windDirection - currentPosition.getOrientation());
+        	// Negative because the reference is contrary to the robot
+
+			Wind w = Wind(windAvg.getSpeedAverage(), -windDirection + currentPosition.getOrientation());
 
 			KernelFunction kernelFunction(w);
 			gaussianRegression.setKernel(&kernelFunction);
