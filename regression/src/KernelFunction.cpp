@@ -28,7 +28,7 @@ KernelFunction::KernelFunction(Wind w) {
 	rotMatrix(1, 1) = cos_alpha;
 
 	MatrixXd sigma0Upwind = MatrixXd(2, 2);
-	sigma0Upwind(0, 0) = semiMajorAxis;
+	sigma0Upwind(0, 0) = semiMajorAxis * 10;
 	sigma0Upwind(0, 1) = 0;
 	sigma0Upwind(1, 0) = 0;
 	sigma0Upwind(1, 1) = semiMinorAxis;
