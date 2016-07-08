@@ -172,10 +172,10 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 		currentPosition.setOrientation(atan2(currentPosition.getY() - old_y, currentPosition.getX() - old_x));
 
-#ifdef DEBUG
-		printf("Wind direction: %f\n", kernel->getWind().getDirection());
-		printf("Wind speed: %f\n", kernel->getWind().getSpeed());
+		if (currentPosition.isNullPos())
+			printf("Error: Couldn't find a free cell to go to. Going to starting position\n");
 
+#ifdef DEBUG
 		fprintf(logFile, "Wind direction: %f\n", kernel->getWind().getDirection());
 		fprintf(logFile, "Wind speed: %f\n", kernel->getWind().getSpeed());
 
@@ -190,9 +190,6 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 #endif
 
-		if (currentPosition.isNullPos())
-			printf("Error: Couldn't find a free cell to go to. Going to starting position\n");
-
 		return currentPosition;
 	}
 
@@ -203,14 +200,22 @@ Position GaussianRegression::updatePosToNearestFreeCell(Position position)
 	int x = position.getX();
 	int y = position.getY();
 
+	printf("Chosen position occupancy value: %d %d %d\n", x, y, gmap->getOccupancyValue(position));
+
+	if (!gmap->isOccupied(position) && !isExplored(position))
+		return position;
+
+
 	for (int k = 0; gmap->isWithinBoundsX(x + k) || gmap->isWithinBoundsY(y + k); k++)
-		for (int i = -k; i <= k; i += k)
+		for (int i = -k; i < k; i += k)
 		{
 			if (gmap->isWithinBoundsX(x + i))
 				position.setX(x + i);
 
-			for (int j = -k; j <= k; j += k)
+			for (int j = -k; j < k; j += k)
 			{
+				printf("i,j,k:%d %d %d\n", i, j, k);
+
 				if (gmap->isWithinBoundsY(y + j))
 					position.setY(y + j);
 				if (!gmap->isOccupied(position) && !isExplored(position))

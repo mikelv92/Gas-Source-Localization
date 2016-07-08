@@ -100,8 +100,6 @@ int main(int argc, char** argv)
             ROS_INFO("Finished computing bouts: %d", boutCount);
 
 			double windDirection = windAvg.getDirectionAverage();
-            ROS_INFO("Wind direction: %lf", -windDirection);
-            ROS_INFO("Robot + wind: %lf", -windDirection + currentPosition.getOrientation());
 
 			//Add
         	// Negative because the reference is contrary to the robot
@@ -115,22 +113,12 @@ int main(int argc, char** argv)
 			Position newPosition = gaussianRegression.nextBestPosition();
             ROS_INFO("New position: %lf %lf", newPosition.getX(), newPosition.getY());
 
-			//moveBase(newPosition);
+			moveBase(newPosition);
 			resetSamples(&bout, &windAvg);
 
-		}
-
-		if (gmap.isInitialized())
-		{
-			printf("Position: 3 -1: %d\n", gmap.getOccupancyValue(Position(3, -1)));
-			printf("Position: 5 -2: %d\n", gmap.getOccupancyValue(Position(5, -2)));
 		}
 
 		ros::spinOnce();
 		loop_rate.sleep();
 	}
-
-
-
-	//	ros::spin();
 }

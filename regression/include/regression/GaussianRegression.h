@@ -28,7 +28,7 @@
 #define ENV_Y 5
 #define STEP_SIZE 1
 #define A_K 100
-#define RHO 5.0
+#define RHO 2.0
 #define MEAN_GAUSS_VARIANCE 2.0
 #define VAR_GAUSS_VARIANCE 2.0
 #define ALPHA_THRESHOLD 0.1
