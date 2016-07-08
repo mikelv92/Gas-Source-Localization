@@ -39,13 +39,12 @@ void GMap::init(unsigned int width,
 
 bool GMap::isOccupied(Position position)
 {
-    int offset_x = -origin.getX();
-    int offset_y = -origin.getY();
+    int offset_x = -origin.getX() / resolution;
+    int offset_y = -origin.getY() / resolution;
 
-    int tr = 1 / resolution;
 
-    int x = position.getX() * tr + offset_x;
-    int y = position.getY() * tr + offset_y;
+    int x = position.getX() / resolution + offset_x;
+    int y = position.getY() / resolution + offset_y;
 
 	return occupancyGrid[x][y] > CELL_OCCUPATION_PROBABILITY_THRESHOLD || occupancyGrid[x][y] == -1;
 }
@@ -57,28 +56,31 @@ bool GMap::isInitialized()
 
 bool GMap::isWithinBounds(Position position)
 {
-	return position.getX() < origin.getX() + width && position.getX() >= origin.getX()
-			&& position.getY() < origin.getY() + height && position.getY() >= origin.getY();
+	return position.getX() < origin.getX() + width * resolution
+			&& position.getX() >= -origin.getX() - width * resolution
+			&& position.getY() < origin.getY() + height * resolution
+			&& position.getY() >= -origin.getY() - height * resolution;
 }
 
 bool GMap::isWithinBoundsX(int x)
 {
-	return x < origin.getX() + width && x >= origin.getX();
+	return x < origin.getX() + width * resolution && x >= -origin.getX() - width * resolution;
 }
 
 bool GMap::isWithinBoundsY(int y)
 {
-	return y < origin.getY() + height && y >= origin.getY();
+	return y < origin.getY() + height * resolution && y >= -origin.getY() - height * resolution;
 }
 
-int GMap::getOccupancyValue(int x, int y)
+int GMap::getOccupancyValue(Position position)
 {
-    int offset_x = -origin.getX();
-    int offset_y = -origin.getY();
+    int offset_x = -origin.getX() / resolution;
+    int offset_y = -origin.getY() / resolution;
 
-    int tr = 1 / resolution;
+    int x = position.getX() / resolution + offset_x;
+    int y = position.getX() / resolution + offset_y;
 
-	return occupancyGrid[x * tr  + offset_x][y * tr + offset_y];
+	return occupancyGrid[x][y];
 }
 
 GMap::~GMap() {

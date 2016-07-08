@@ -36,7 +36,7 @@ public:
 				int * data
 			);
 	bool isOccupied(Position position);
-	int getOccupancyValue(int x, int y);
+	int getOccupancyValue(Position position);
 	bool isWithinBounds(Position position);
 	bool isWithinBoundsX(int x);
 	bool isWithinBoundsY(int y);
