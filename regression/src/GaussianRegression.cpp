@@ -165,10 +165,11 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		float old_x = currentPosition.getX();
 		float old_y = currentPosition.getY();
 
-		currentPosition.setX(new_pos_x);
-		currentPosition.setY(new_pos_y);
+		Position candidatePosition(new_pos_x, new_pos_y);
 
-		updatePosToNearestFreeCell(&currentPosition);
+		//Check if there are any obstacles and get the nearest free cell to the candidate
+		currentPosition = updatePosToNearestFreeCell(candidatePosition);
+
 		currentPosition.setOrientation(atan2(currentPosition.getY() - old_y, currentPosition.getX() - old_x));
 
 #ifdef DEBUG
@@ -189,32 +190,34 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 #endif
 
+		if (currentPosition.isNullPos())
+			printf("Error: Couldn't find a free cell to go to. Going to starting position\n");
 
 		return currentPosition;
 	}
 
 }
 
-void GaussianRegression::updatePosToNearestFreeCell(Position * position)
+Position GaussianRegression::updatePosToNearestFreeCell(Position position)
 {
-	int x = position->getX();
-	int y = position->getY();
-	Position origin = gmap->getOrigin();
+	int x = position.getX();
+	int y = position.getY();
 
-	for (int k = 0; x + k < gmap->getWidth() || y + k < gmap->getHeight(); k++)
+	for (int k = 0; gmap->isWithinBoundsX(x + k) || gmap->isWithinBoundsY(y + k); k++)
 		for (int i = -k; i <= k; i += k)
 		{
-			if (x + k < origin.getX() + gmap->getWidth() && x + k >= origin.getX())
-				position->setX(x + k);
+			if (gmap->isWithinBoundsX(x + i))
+				position.setX(x + i);
 
 			for (int j = -k; j <= k; j += k)
 			{
-				if (y + k < origin.getY() + gmap->getHeight() && y + k >= origin.getY())
-					position->setY(y + k);
-				if (!gmap->isOccupied(*position) && !isExplored(*position))
-					return;
+				if (gmap->isWithinBoundsY(y + j))
+					position.setY(y + j);
+				if (!gmap->isOccupied(position) && !isExplored(position))
+					return position;
 			}
 		}
+	return Position(true);
 }
 
 bool GaussianRegression::isExplored(Position x_new)

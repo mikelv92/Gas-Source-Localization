@@ -12,10 +12,10 @@
 
 class Position {
 private:
-	float x;
-	float y;
-	//float z;
-	float orientation; //radians
+	float x; // in meters
+	float y; // in meters
+	float orientation; // in radians
+	bool nullPos; // is this a real position or not?
 public:
 	Position() {};
 	Position(float x, float y) {
@@ -23,7 +23,17 @@ public:
 		this->x = x > 0 ? floor(x + 0.5) : ceil(x - 0.5);
 		this->y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
 		this->orientation = 0;
+		this->nullPos = false;
 	}
+
+	Position(bool nullPos) {
+		// Round
+		this->x = 0;
+		this->y = 0;
+		this->orientation = 0;
+		this->nullPos = true;
+	}
+
 
 	float getX() const {
 		return x;
@@ -55,7 +65,6 @@ public:
 	{
 		return this->getX() < pos.getX() ||
 				(this->getX() == pos.getX() && this->getY() < pos.getY());
-		//|| (this->getX() == pos.getX() && this->getY() == pos.getY() && this->getZ() < pos.getZ());
 	}
 
 	float getOrientation() const {
@@ -64,6 +73,14 @@ public:
 
 	void setOrientation(float orientation) {
 		this->orientation = orientation;
+	}
+
+	bool isNullPos() const {
+		return nullPos;
+	}
+
+	void setNullPos(bool nullPos) {
+		this->nullPos = nullPos;
 	}
 };
 

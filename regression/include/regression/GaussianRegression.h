@@ -56,7 +56,7 @@ private:
 
 	bool isExplored(Position x);
 	Position updateCurrentPosition(Position meanPos, Position varPos);
-	void updatePosToNearestFreeCell(Position * position);
+	Position updatePosToNearestFreeCell(Position position);
 	double meanDirGaussF(double theta);
 	double varDirGaussF(double theta);
 

@@ -120,7 +120,11 @@ int main(int argc, char** argv)
 
 		}
 
-
+		if (gmap.isInitialized())
+		{
+			printf("Position: 3 1: %d", gmap.getOccupancyValue(3, -1));
+			printf("Position: 1 0: %d", gmap.getOccupancyValue(1, 0));
+		}
 
 		ros::spinOnce();
 		loop_rate.sleep();

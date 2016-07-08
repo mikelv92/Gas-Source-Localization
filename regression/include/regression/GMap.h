@@ -13,7 +13,7 @@
 
 #include "regression/Position.h"
 
-#define CELL_OCCUPATION_PROBABILITY_THRESHOLD 50
+#define CELL_OCCUPATION_PROBABILITY_THRESHOLD 65
 
 class GMap {
 private:
@@ -36,7 +36,10 @@ public:
 				int * data
 			);
 	bool isOccupied(Position position);
+	int getOccupancyValue(int x, int y);
 	bool isWithinBounds(Position position);
+	bool isWithinBoundsX(int x);
+	bool isWithinBoundsY(int y);
 	bool isInitialized();
 	virtual ~GMap();
 
