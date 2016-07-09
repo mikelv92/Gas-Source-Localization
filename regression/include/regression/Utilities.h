@@ -63,7 +63,7 @@ public:
 			numY 	+= it->first.getY() * it->second;
 			den 	+= it->second;
 		}
-		return Position(floor(numX / den), floor(numY / den));
+		return Position(numX / den, numY / den);
 	}
 
 	static double integral(double(*f)(double x), double a, double b, int n)

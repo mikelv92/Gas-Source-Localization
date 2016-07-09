@@ -37,6 +37,7 @@ public:
 			);
 	bool isOccupied(Position position);
 	int getOccupancyValue(Position position);
+	void updateGrid(int x, int y, int value);
 	bool isWithinBounds(Position position);
 	bool isWithinBoundsX(int x);
 	bool isWithinBoundsY(int y);

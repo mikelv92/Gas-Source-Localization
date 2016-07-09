@@ -8,9 +8,10 @@
 #include "regression/GMap.h"
 GMap::GMap()
 {
-	this->_isInit = false;
-	this->width = 0;
-	this->height = 0;
+	this->_isInit 		= false;
+	this->width 		= 0;
+	this->height 		= 0;
+	this->resolution 	= 0;
 }
 
 void GMap::init(unsigned int width,
@@ -21,12 +22,13 @@ void GMap::init(unsigned int width,
 				int * data
 				)
 {
-	this->width = width;
-	this->height = height;
-	this->resolution = resolution;
-	this->origin = Position(origin_x, origin_y);
+	this->width 		= width;
+	this->height 		= height;
+	this->resolution 	= resolution;
+	this->origin 		= Position(origin_x, origin_y);
 
-	occupancyGrid = (int **)malloc(width * sizeof(int *));
+	occupancyGrid 		= (int **)malloc(width * sizeof(int *));
+
 	for (int i = 0; i < width; i++)
 		occupancyGrid[i] = (int *)malloc(height * sizeof(int));
 
@@ -39,12 +41,10 @@ void GMap::init(unsigned int width,
 
 bool GMap::isOccupied(Position position)
 {
-    int offset_x = -origin.getX() / resolution;
-    int offset_y = -origin.getY() / resolution;
-
-
-    int x = position.getX() / resolution + offset_x;
-    int y = position.getY() / resolution + offset_y;
+    int offset_x 	= -origin.getX() / resolution;
+    int offset_y 	= -origin.getY() / resolution;
+    int x 			= position.getX() / resolution + offset_x;
+    int y 			= position.getY() / resolution + offset_y;
 
 	return occupancyGrid[x][y] > CELL_OCCUPATION_PROBABILITY_THRESHOLD || occupancyGrid[x][y] == -1;
 }
@@ -74,13 +74,17 @@ bool GMap::isWithinBoundsY(int y)
 
 int GMap::getOccupancyValue(Position position)
 {
-    int offset_x = -origin.getX() / resolution;
-    int offset_y = -origin.getY() / resolution;
-
-    int x = position.getX() / resolution + offset_x;
-    int y = position.getX() / resolution + offset_y;
+    int offset_x 	= -origin.getX() / resolution;
+    int offset_y 	= -origin.getY() / resolution;
+    int x 			= position.getX() / resolution + offset_x;
+    int y 			= position.getX() / resolution + offset_y;
 
 	return occupancyGrid[x][y];
+}
+
+void GMap::updateGrid(int x, int y, int value)
+{
+	occupancyGrid[x][y] = value;
 }
 
 GMap::~GMap() {

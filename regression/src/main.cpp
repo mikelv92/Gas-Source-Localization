@@ -22,13 +22,13 @@ void moveBase(Position position)
 
 	move_base_msgs::MoveBaseGoal goal;
 
-	goal.target_pose.header.frame_id = "map";
-	goal.target_pose.header.stamp = ros::Time::now();
+	goal.target_pose.header.frame_id 	= "map";
+	goal.target_pose.header.stamp 		= ros::Time::now();
 
-	goal.target_pose.pose.position.x = position.getX();
-	goal.target_pose.pose.position.y = position.getY();
-	goal.target_pose.pose.orientation.z = sin(position.getOrientation() / 2);
-	goal.target_pose.pose.orientation.w = cos(position.getOrientation() / 2);
+	goal.target_pose.pose.position.x 	= position.getX();
+	goal.target_pose.pose.position.y 	= position.getY();
+	goal.target_pose.pose.orientation.z	= sin(position.getOrientation() / 2);
+	goal.target_pose.pose.orientation.w	= cos(position.getOrientation() / 2);
 
 	ROS_INFO("Sending goal");
 	moveBaseClient.sendGoal(goal);
@@ -59,7 +59,6 @@ int main(int argc, char** argv)
 
 	ros::Rate loop_rate(100);
 
-
 	Position currentPosition(0, 0);
 
 	Bout bout;
@@ -72,12 +71,12 @@ int main(int argc, char** argv)
 	DataHandler datahandler(&bout, &windAvg, &gmap);
 	resetSamples(&bout, &windAvg);
 
-
 	ros::Subscriber pid_sub 			= n.subscribe("/pid_node/ppm", 1000, &DataHandler::pid_callback, &datahandler);
 	ros::Subscriber e_nose_sub 			= n.subscribe("/e_nose_data", 1000, &DataHandler::e_nose_callback, &datahandler);
 	ros::Subscriber wind_speed_sub 		= n.subscribe("/windsonic/wind_speed", 1000, &DataHandler::wind_speed_callback, &datahandler);
 	ros::Subscriber wind_direction_sub 	= n.subscribe("/windsonic/wind_direction", 1000, &DataHandler::wind_direction_callback, &datahandler);
-	ros::Subscriber gmap_sub			= n.subscribe("/map", 1000, &DataHandler::gmap_callback, &datahandler);
+	ros::Subscriber costmap_sub			= n.subscribe("/move_base/global_costmap/costmap", 1, &DataHandler::costmap_callback, &datahandler);
+	ros::Subscriber costmap_update_sub	= n.subscribe("/move_base/global_costmap/costmap_updates", 10, &DataHandler::costmap_update_callback, &datahandler);
 	ros::Subscriber ndt_mcl_sub			= n.subscribe("/ndt_mcl", 1000, &DataHandler::ndt_mcl_callback, &datahandler);
 
 	while (ros::ok())
@@ -100,10 +99,6 @@ int main(int argc, char** argv)
             ROS_INFO("Finished computing bouts: %d", boutCount);
 
 			double windDirection = windAvg.getDirectionAverage();
-
-			//Add
-        	// Negative because the reference is contrary to the robot
-
 			Wind w = Wind(windAvg.getSpeedAverage(), -windDirection + currentPosition.getOrientation());
 
 			KernelFunction kernelFunction(w);
@@ -111,7 +106,7 @@ int main(int argc, char** argv)
 			gaussianRegression.addMeasurement(currentPosition, boutCount);
 
 			Position newPosition = gaussianRegression.nextBestPosition();
-            ROS_INFO("New position: %lf %lf", newPosition.getX(), newPosition.getY());
+            ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
 
 			moveBase(newPosition);
 			resetSamples(&bout, &windAvg);

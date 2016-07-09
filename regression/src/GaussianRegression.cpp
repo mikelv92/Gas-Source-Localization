@@ -51,9 +51,9 @@ double GaussianRegression::mean(Position x_star)
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
 		Utilities::addElementToVector(&k_x_xstar, kernel->getK(*x, x_star));
 
-	MatrixXd I_n = MatrixXd::Identity(datasetSize, datasetSize);
-	I_n *= SIGMA_N;
-	MatrixXd v = K + I_n;
+	MatrixXd I_n 	= MatrixXd::Identity(datasetSize, datasetSize);
+	I_n 			*= SIGMA_N;
+	MatrixXd v 		= K + I_n;
 
 	return (k_x_xstar * v.inverse() * y)(0);
 }
@@ -65,11 +65,11 @@ double GaussianRegression::variance(Position x_star)
 
 	int datasetSize = X.size();
 
-	double k_star = kernel->getK(x_star, x_star);
+	double k_star 	= kernel->getK(x_star, x_star);
 
-	MatrixXd I_n = MatrixXd::Identity(datasetSize, datasetSize);
-	I_n *= SIGMA_N;
-	MatrixXd v = K + I_n;
+	MatrixXd I_n 	= MatrixXd::Identity(datasetSize, datasetSize);
+	I_n 			*= SIGMA_N;
+	MatrixXd v 		= K + I_n;
 
 	RowVectorXd k_x_xstar;
 	for (list<Position>::iterator x = X.begin(); x != X.end(); x++)
@@ -103,8 +103,8 @@ Position GaussianRegression::nextBestPosition()
 	for (map<Position, double>::iterator it = meanMap.begin(); it != meanMap.end(); it++)
 		if (it->second > maxMean)
 		{
-			maxMeanPos = it->first;
-			maxMean = it->second;
+			maxMeanPos 	= it->first;
+			maxMean 	= it->second;
 		}
 
 	Position maxVariancePos = varianceMap.begin()->first;
@@ -113,8 +113,8 @@ Position GaussianRegression::nextBestPosition()
 	for (map<Position, double>::iterator it = varianceMap.begin(); it != varianceMap.end(); it++)
 		if (it->second > maxVariance)
 		{
-			maxVariancePos = it->first;
-			maxVariance = it->second;
+			maxVariancePos 	= it->first;
+			maxVariance 	= it->second;
 		}
 
 	return updateCurrentPosition(maxMeanPos, maxVariancePos);
@@ -168,7 +168,10 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 		Position candidatePosition(new_pos_x, new_pos_y);
 
 		//Check if there are any obstacles and get the nearest free cell to the candidate
-		currentPosition = updatePosToNearestFreeCell(candidatePosition);
+		if (!gmap->isOccupied(candidatePosition) && !isExplored(candidatePosition))
+			currentPosition = candidatePosition;
+		else
+			currentPosition = updatePosToNearestFreeCell(candidatePosition);
 
 		currentPosition.setOrientation(atan2(currentPosition.getY() - old_y, currentPosition.getX() - old_x));
 
@@ -202,17 +205,13 @@ Position GaussianRegression::updatePosToNearestFreeCell(Position position)
 
 	printf("Chosen position occupancy value: %d %d %d\n", x, y, gmap->getOccupancyValue(position));
 
-	if (!gmap->isOccupied(position) && !isExplored(position))
-		return position;
-
-
-	for (int k = 0; gmap->isWithinBoundsX(x + k) || gmap->isWithinBoundsY(y + k); k++)
-		for (int i = -k; i < k; i += k)
+	for (int k = 1; gmap->isWithinBoundsX(x + k) || gmap->isWithinBoundsY(y + k); k++)
+		for (int i = -k; i <= k; i += k)
 		{
 			if (gmap->isWithinBoundsX(x + i))
 				position.setX(x + i);
 
-			for (int j = -k; j < k; j += k)
+			for (int j = -k; j <= k; j += k)
 			{
 				printf("i,j,k:%d %d %d\n", i, j, k);
 
