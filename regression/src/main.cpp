@@ -93,6 +93,8 @@ int main(int argc, char** argv)
 			)
 		{
 			currentPosition = datahandler.getCurrentPosition();
+			gaussianRegression.setCurrentPosition(currentPosition);
+
             ROS_INFO("Current position: %lf %lf", currentPosition.getX(), currentPosition.getY());
 
 			int boutCount = bout.getBoutCount(S1);

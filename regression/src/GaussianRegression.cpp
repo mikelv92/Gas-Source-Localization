@@ -213,7 +213,13 @@ Position GaussianRegression::updatePosToNearestFreeCell(Position position)
 
 			for (int j = -k; j <= k; j += k)
 			{
-				printf("i,j,k:%d %d %d\n", i, j, k);
+				printf("x,y,k, occupancy val, is explored, is occupied:%lf %lf %d: %d %c, %c\n",
+				                                               position.getX(),
+				                                               position.getY(),
+				                                               k,
+				                                               gmap->getOccupancyValue(position),
+				                                               isExplored(position) ? 'e' : 'f',
+				                                               gmap->isOccupied(position) ? 'o' : 'f');
 
 				if (gmap->isWithinBoundsY(y + j))
 					position.setY(y + j);

@@ -41,12 +41,8 @@ void GMap::init(unsigned int width,
 
 bool GMap::isOccupied(Position position)
 {
-    int offset_x 	= -origin.getX() / resolution;
-    int offset_y 	= -origin.getY() / resolution;
-    int x 			= position.getX() / resolution + offset_x;
-    int y 			= position.getY() / resolution + offset_y;
-
-	return occupancyGrid[x][y] > CELL_OCCUPATION_PROBABILITY_THRESHOLD || occupancyGrid[x][y] == -1;
+	int occupancyValue = getOccupancyValue(position);
+	return occupancyValue > CELL_OCCUPATION_PROBABILITY_THRESHOLD || occupancyValue == -1;
 }
 
 bool GMap::isInitialized()

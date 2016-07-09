@@ -72,6 +72,12 @@ public:
 	void setGMap(GMap * gmap);
 	void printMeanMap();
 	void printVarianceMap();
+
+	void setCurrentPosition(Position position)
+	       {
+	               this->currentPosition = position;
+	       }
+
 	~GaussianRegression();
 };
 
