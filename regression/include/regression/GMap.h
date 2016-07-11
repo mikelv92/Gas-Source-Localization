@@ -42,6 +42,7 @@ public:
 	bool isWithinBoundsX(int x);
 	bool isWithinBoundsY(int y);
 	bool isInitialized();
+	void printMap();
 	virtual ~GMap();
 
 	unsigned int getHeight() const {

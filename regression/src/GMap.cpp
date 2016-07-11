@@ -83,6 +83,22 @@ void GMap::updateGrid(int x, int y, int value)
 	occupancyGrid[x][y] = value;
 }
 
+void GMap::printMap()
+{
+	FILE * file = fopen("costMap.pgm", "w");
+
+	fprintf(file, "P2\n4000\n4000\n100\n");
+
+	for (int j = 0; j < height; j++)
+	{
+		for (int i = 0; i < height; i++)
+			fprintf(file, "%d ", occupancyGrid[i][j]);
+		fprintf(file, "\n");
+	}
+
+	fclose(file);
+}
+
 GMap::~GMap() {
 	for (int i = 0; i < this->width; i++)
 		if (occupancyGrid[i])
