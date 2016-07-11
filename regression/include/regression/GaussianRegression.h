@@ -27,11 +27,11 @@
 #define ENV_X 10
 #define ENV_Y 5
 #define STEP_SIZE 1
-#define A_K 100
-#define RHO 2.0
+#define INIT_ALPHA 100
+#define RHO 4.0
 #define MEAN_GAUSS_VARIANCE 2.0
 #define VAR_GAUSS_VARIANCE 2.0
-#define ALPHA_THRESHOLD 0.1
+#define ALPHA_THRESHOLD 0.4
 #define EXPLORE_X 50
 #define EXPLORE_Y 50
 
@@ -54,19 +54,23 @@ private:
 
 	Position currentPosition;
 
+	map<Position, double> globalMeanMap;
+	map<Position, double> globalVarianceMap;
+
 	bool isExplored(Position x);
 	Position updateCurrentPosition(Position meanPos, Position varPos);
 	Position updatePosToNearestFreeCell(Position position);
+	Position getMaxMeanPos();
+	Position getMaxVariancePos();
+	Position finalPosition();
 	double meanDirGaussF(double theta);
 	double varDirGaussF(double theta);
-
-	FILE * logFile;
 
 public:
 	GaussianRegression();
 	double mean(Position x_star);
 	double variance(Position x_star);
-	void addMeasurement(Position x_prime, int boutCount);
+	void addMeasurement(Position x_prime, double value);
 	Position nextBestPosition();
 	void setKernel(KernelFunction * kernelFunction);
 	void setGMap(GMap * gmap);

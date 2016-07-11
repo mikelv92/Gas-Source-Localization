@@ -32,13 +32,19 @@ public:
 	const static int SIGNAL_LEN = 10000;
 
 	Bout();
+	void computeBouts();
 	int getBoutCount(SignalIndex signalIndex);
+	int getBoutCountAverage();
+	double getAmplitude(SignalIndex signalIndex);
+	double getAmplitudeAverage();
 	void addSample(SignalIndex signalIndex, double sample);
 	void resetSamples(SignalIndex signalIndex);
 	bool isSignalArrayFull(SignalIndex signalIndex);
 	~Bout();
 private:
 	map<SignalIndex, double *> signalsMap;
+	map<SignalIndex, int> boutsMap;
+	map<SignalIndex, double> amplitudeMap;
 
 	int sampleIndexes[6];
 

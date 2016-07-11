@@ -26,149 +26,160 @@ Bout::Bout() {
 	}
 }
 
+void Bout::computeBouts()
+{
+	for (int i = S1; i != NUM_SIGNALS; i++)
+	{
+		SignalIndex signalIndex = static_cast<SignalIndex>(i);
+
+		double * signal = signalsMap.find(signalIndex)->second;
+
+		// Smooth
+		double * gauss_kernel = (double*)malloc(KERNEL_LEN * sizeof(double));
+		populateGaussianFilter(gauss_kernel);
+
+		convolute(signal, gauss_kernel, KERNEL_LEN);
+
+		free(gauss_kernel);
+
+		// Diff
+		double diff_kernel_double[2] = { -1, 1 };
+		convolute(signal, diff_kernel_double, 2);
+
+		// EWMA
+		ewma(signal);
+
+		double * ewma_signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
+		memcpy(ewma_signal, signal, SIGNAL_LEN * sizeof(double));
+
+		// Derivative
+		convolute(signal, diff_kernel_double, 2);
+
+		// Positive part of the derivative
+		int * sign_change = (int*)malloc(SIGNAL_LEN * sizeof(int));
+		for (int i = 0; i < SIGNAL_LEN; i++)
+			if (signal[i] >= 0)
+				sign_change[i] = 1;
+			else
+				sign_change[i] = 0;
+
+		int diff_kernel_int[2] = { -1, 1};
+		convolute(sign_change, diff_kernel_int, 2);
+
+		// Get positive and negative indexes
+		int * pos_changes = (int*)malloc(SIGNAL_LEN * sizeof(int));
+		int * neg_changes = (int*)malloc(SIGNAL_LEN * sizeof(int));
+		int pos_j = 0, neg_j = 0;
+		for (int i = 0; i < SIGNAL_LEN; i++)
+		{
+			if (sign_change[i] > 0)
+				pos_changes[pos_j++] = i;
+			if (sign_change[i] < 0)
+				neg_changes[neg_j++] = i;
+		}
+
+		free(sign_change);
+
+		int poslen = pos_j;
+		int neglen = neg_j;
+
+		int * neg_changes_2;
+		if (pos_changes[0] > neg_changes[0])
+		{
+			neg_changes_2 = neg_changes + sizeof(int); //discard first negative change
+			neglen--;
+		}
+		else
+			neg_changes_2 = neg_changes;
+
+		if (poslen > neglen) //lengths must be equal
+		{
+			int difference = poslen - neglen;
+			poslen -= difference;
+		}
+
+		int posneg[2][poslen];
+		for (int i = 0; i < poslen; i++)
+		{
+			posneg[0][i] = pos_changes[i];
+			posneg[1][i] = neg_changes[i];
+		}
+		free(pos_changes);
+		free(neg_changes);
+
+		// Get amplitudes
+		double amps[poslen];
+		for (int i = 0; i < poslen; i++)
+			amps[i] = ewma_signal[posneg[1][i]] - ewma_signal[posneg[0][i]];
+
+		free(ewma_signal);
+
+		// Filter amplitudes according to a threshold
+		//	double amp_threshold = computeAmpThreshold(amps, poslen);
+		//	printf("Amp thesh: %lf\n", amp_threshold);
+		int superThreshAmpIndexes[poslen];
+		int thresh_i = 0;
+		//	for (int i = 0; i < poslen; i++)
+		//		if (amps[i] > amp_threshold)
+		//			superThreshAmpIndexes[thresh_i++] = i;
+		for (int i = 0; i < poslen; i++)
+			if (amps[i] > BOUT_AMP_THRESHOLD)
+				superThreshAmpIndexes[thresh_i++] = i;
+
+		int filteredAmpsSize = thresh_i;
+
+		// Get indices of those that passed the threshold
+		int filteredAmp_posneg[2][filteredAmpsSize];
+		for (int i = 0; i < filteredAmpsSize; i++)
+		{
+			filteredAmp_posneg[0][i] = posneg[0][superThreshAmpIndexes[i]];
+			filteredAmp_posneg[1][i] = posneg[1][superThreshAmpIndexes[i]];
+		}
+
+		// Get duration of bouts
+		int duration_posneg[filteredAmpsSize];
+		for (int i = 0; i < filteredAmpsSize; i++)
+			duration_posneg[i] = filteredAmp_posneg[1][i] - filteredAmp_posneg[0][i];
+
+		// Filter durations according to a threshold
+		int bouts = 0;
+		for (int i = 0; i < filteredAmpsSize; i++)
+			if (duration_posneg[i] > BOUT_DURATION_THRESHOLD)
+				bouts++;
+
+		boutsMap[signalIndex] = bouts;
+
+		double ampsAvg = 0;
+		for (int k = 0; k < poslen; k++)
+			ampsAvg += amps[k];
+		amplitudeMap[signalIndex] = ampsAvg / poslen;
+	}
+}
+
 int Bout::getBoutCount(SignalIndex signalIndex)
 {
-	double * signal = signalsMap.find(signalIndex)->second;
+	return boutsMap.find(signalIndex)->second;
+}
 
-	Utilities::printArray(logFile, "Init signal", signal, SIGNAL_LEN);
-	// Smooth
-	double * gauss_kernel = (double*)malloc(KERNEL_LEN * sizeof(double));
-	populateGaussianFilter(gauss_kernel);
-//	Utilities::printArray(logFile, "Gauss kernel", gauss_kernel, KERNEL_LEN);
+double Bout::getAmplitude(SignalIndex signalIndex)
+{
+	return amplitudeMap.find(signalIndex)->second;
+}
 
-	convolute(signal, gauss_kernel, KERNEL_LEN);
+int Bout::getBoutCountAverage()
+{
+	int boutAverage = 0;
+	for (map<SignalIndex, int>::iterator it = boutsMap.begin(); it != boutsMap.end(); it++)
+		boutAverage += it->second;
+	return boutAverage / boutsMap.size();
+}
 
-//	Utilities::printArray(logFile, "After smoothing", signal, SIGNAL_LEN);
-
-	free(gauss_kernel);
-
-	// Diff
-	double diff_kernel_double[2] = { -1, 1 };
-	convolute(signal, diff_kernel_double, 2);
-//	Utilities::printArray(logFile, "After diff", signal, SIGNAL_LEN);
-
-	// EWMA
-	ewma(signal);
-
-//	Utilities::printArray(logFile, "After ewma", signal, SIGNAL_LEN);
-
-	double * ewma_signal = (double*)malloc(SIGNAL_LEN * sizeof(double));
-	memcpy(ewma_signal, signal, SIGNAL_LEN * sizeof(double));
-
-	// Derivative
-	convolute(signal, diff_kernel_double, 2);
-//	Utilities::printArray(logFile, "Diff after ewma", signal, SIGNAL_LEN);
-
-
-	// Positive part of the derivative
-	int * sign_change = (int*)malloc(SIGNAL_LEN * sizeof(int));
-	for (int i = 0; i < SIGNAL_LEN; i++)
-		if (signal[i] >= 0)
-			sign_change[i] = 1;
-		else
-			sign_change[i] = 0;
-
-//	Utilities::printArray(logFile, "init sign change", sign_change, SIGNAL_LEN);
-
-
-	int diff_kernel_int[2] = { -1, 1};
-	convolute(sign_change, diff_kernel_int, 2);
-//	Utilities::printArray(logFile, "Diff int", sign_change, SIGNAL_LEN);
-
-	// Get positive and negative indexes
-	int * pos_changes = (int*)malloc(SIGNAL_LEN * sizeof(int));
-	int * neg_changes = (int*)malloc(SIGNAL_LEN * sizeof(int));
-	int pos_j = 0, neg_j = 0;
-	for (int i = 0; i < SIGNAL_LEN; i++)
-	{
-		if (sign_change[i] > 0)
-			pos_changes[pos_j++] = i;
-		if (sign_change[i] < 0)
-			neg_changes[neg_j++] = i;
-	}
-
-	free(sign_change);
-
-	int poslen = pos_j;
-	int neglen = neg_j;
-
-//	Utilities::printArray(logFile, "Pos changes", pos_changes, poslen);
-//	Utilities::printArray(logFile, "Neg changes", neg_changes, neglen);
-
-	int * neg_changes_2;
-	if (pos_changes[0] > neg_changes[0])
-	{
-		neg_changes_2 = neg_changes + sizeof(int); //discard first negative change
-		neglen--;
-	}
-	else
-		neg_changes_2 = neg_changes;
-
-	if (poslen > neglen) //lengths must be equal
-	{
-		int difference = poslen - neglen;
-		poslen -= difference;
-	}
-
-	int posneg[2][poslen];
-	for (int i = 0; i < poslen; i++)
-	{
-		posneg[0][i] = pos_changes[i];
-		posneg[1][i] = neg_changes[i];
-	}
-	free(pos_changes);
-	free(neg_changes);
-
-	// Get amplitudes
-	double amps[poslen];
-	for (int i = 0; i < poslen; i++)
-		amps[i] = ewma_signal[posneg[1][i]] - ewma_signal[posneg[0][i]];
-
-//	Utilities::printArray(logFile, "Amps", amps, poslen);
-
-	free(ewma_signal);
-
-	// Filter amplitudes according to a threshold
-//	double amp_threshold = computeAmpThreshold(amps, poslen);
-//	printf("Amp thesh: %lf\n", amp_threshold);
-	int superThreshAmpIndexes[poslen];
-	int thresh_i = 0;
-//	for (int i = 0; i < poslen; i++)
-//		if (amps[i] > amp_threshold)
-//			superThreshAmpIndexes[thresh_i++] = i;
-	for (int i = 0; i < poslen; i++)
-		if (amps[i] > BOUT_AMP_THRESHOLD)
-			superThreshAmpIndexes[thresh_i++] = i;
-
-	int filteredAmpsSize = thresh_i;
-
-	// Get indices of those that passed the threshold
-	int filteredAmp_posneg[2][filteredAmpsSize];
-	for (int i = 0; i < filteredAmpsSize; i++)
-	{
-		filteredAmp_posneg[0][i] = posneg[0][superThreshAmpIndexes[i]];
-		filteredAmp_posneg[1][i] = posneg[1][superThreshAmpIndexes[i]];
-	}
-//	Utilities::printArray(logFile, "filteredAmp_posNeg0", filteredAmp_posneg[0], filteredAmpsSize);
-//	Utilities::printArray(logFile, "filteredAmp_posNeg1", filteredAmp_posneg[1], filteredAmpsSize);
-
-	// Get duration of bouts
-	int duration_posneg[filteredAmpsSize];
-	for (int i = 0; i < filteredAmpsSize; i++)
-		duration_posneg[i] = filteredAmp_posneg[1][i] - filteredAmp_posneg[0][i];
-
-//	Utilities::printArray(logFile, "duration_posneg", duration_posneg, filteredAmpsSize);
-
-	// Filter durations according to a threshold
-	int bouts = 0;
-	for (int i = 0; i < filteredAmpsSize; i++)
-		if (duration_posneg[i] > BOUT_DURATION_THRESHOLD)
-			bouts++;
-
-	resetSamples(signalIndex);
-
-
-	return bouts;
+double Bout::getAmplitudeAverage()
+{
+	double ampAverage = 0;
+	for (map<SignalIndex, double>::iterator it = amplitudeMap.begin(); it != amplitudeMap.end(); it++)
+		ampAverage += it->second;
+	return ampAverage / amplitudeMap.size();
 }
 
 void Bout::convolute(double * sig, const double kernel[], int kernelLen)
@@ -256,8 +267,7 @@ void Bout::convolute(int * sig, const int kernel[], int kernelLen)
 	free(result);
 
 }
-*/
-
+ */
 
 void Bout::populateGaussianFilter(double * kernel)
 {
@@ -266,7 +276,7 @@ void Bout::populateGaussianFilter(double * kernel)
 	for (int i = -KERNEL_LEN / 2; i < KERNEL_LEN / 2; i++)
 	{
 		r = sqrt(i * i);
-//		kernel[i + KERNEL_LEN / 2] = exp(-(r * r)/(2 * SMOOTH_STD * SMOOTH_STD)) / (sqrt(2 * M_PI) * SMOOTH_STD);
+		//		kernel[i + KERNEL_LEN / 2] = exp(-(r * r)/(2 * SMOOTH_STD * SMOOTH_STD)) / (sqrt(2 * M_PI) * SMOOTH_STD);
 		kernel[i + KERNEL_LEN / 2] = exp(-0.5 * (r * r) / (SMOOTH_STD * SMOOTH_STD));
 		sum += kernel[i + KERNEL_LEN / 2];
 	}
@@ -276,7 +286,6 @@ void Bout::populateGaussianFilter(double * kernel)
 		kernel[i] /= sum;
 	}
 }
-
 
 void Bout::ewma(double * sig)
 {
@@ -341,7 +350,6 @@ bool Bout::isSignalArrayFull(SignalIndex signalIndex)
 {
 	return sampleIndexes[signalIndex] >= SIGNAL_LEN;
 }
-
 
 Bout::~Bout()
 {

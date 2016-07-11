@@ -97,15 +97,15 @@ int main(int argc, char** argv)
 
             ROS_INFO("Current position: %lf %lf", currentPosition.getX(), currentPosition.getY());
 
-			int boutCount = bout.getBoutCount(S1);
-            ROS_INFO("Finished computing bouts: %d", boutCount);
+            double amplitude = bout.getAmplitudeAverage();
+            ROS_INFO("Average Amplitude: %lf", amplitude);
 
 			double windDirection = windAvg.getDirectionAverage();
 			Wind w = Wind(windAvg.getSpeedAverage(), -windDirection + currentPosition.getOrientation());
 
 			KernelFunction kernelFunction(w);
 			gaussianRegression.setKernel(&kernelFunction);
-			gaussianRegression.addMeasurement(currentPosition, boutCount);
+			gaussianRegression.addMeasurement(currentPosition, amplitude);
 
 			Position newPosition = gaussianRegression.nextBestPosition();
             ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
