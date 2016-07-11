@@ -111,6 +111,9 @@ int main(int argc, char** argv)
             ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
 
 			moveBase(newPosition);
+
+			gaussianRegression.printMeanMap();
+			gaussianRegression.printVarianceMap();
 			resetSamples(&bout, &windAvg);
 
 		}
