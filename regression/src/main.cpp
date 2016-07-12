@@ -13,7 +13,7 @@
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 
-void moveBase(Position position)
+bool moveBase(Position position)
 {
 	MoveBaseClient moveBaseClient("move_base", true);
 
@@ -35,10 +35,9 @@ void moveBase(Position position)
 	moveBaseClient.waitForResult();
 
 	if (moveBaseClient.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-		ROS_INFO("Base moved");
+		return true;
 	else
-		ROS_INFO("Couldn't move base.");
-
+		return false;
 }
 
 void resetSamples(Bout * bout, WindAvg * windAvg)
@@ -110,7 +109,13 @@ int main(int argc, char** argv)
 			Position newPosition = gaussianRegression.nextBestPosition();
             ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
 
-			moveBase(newPosition);
+			if (moveBase(newPosition))
+				ROS_INFO("Moved base.");
+			else
+			{
+				gmap.addFailedPosition(newPosition);
+				ROS_INFO("Couldn't move base.");
+			}
 
 			resetSamples(&bout, &windAvg);
 

@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <list>
 
 #include "regression/Position.h"
 
@@ -25,6 +26,10 @@ private:
 
 	bool _isInit;
 	Position origin;
+	std::list<Position> failedGoals;
+
+	bool isFailedPos(Position position);
+
 
 public:
 	GMap();
@@ -43,6 +48,7 @@ public:
 	bool isWithinBoundsY(int y);
 	bool isInitialized();
 	void printMap();
+	void addFailedPosition(Position position);
 	virtual ~GMap();
 
 	unsigned int getHeight() const {
