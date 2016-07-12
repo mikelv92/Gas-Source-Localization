@@ -109,16 +109,16 @@ int main(int argc, char** argv)
 			Position newPosition = gaussianRegression.nextBestPosition();
             ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
 
-			if (moveBase(newPosition))
-				ROS_INFO("Moved base.");
-			else
+			while (!moveBase(newPosition))
 			{
 				gmap.addFailedPosition(newPosition);
 				ROS_INFO("Couldn't move base.");
+				newPosition = gaussianRegression.nextBestPosition();
+	            ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
 			}
 
+			ROS_INFO("Base moved.");
 			resetSamples(&bout, &windAvg);
-
 		}
 
 		ros::spinOnce();

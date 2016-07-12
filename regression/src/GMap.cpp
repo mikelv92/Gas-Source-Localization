@@ -42,8 +42,8 @@ void GMap::init(unsigned int width,
 bool GMap::isOccupied(Position position)
 {
 	int occupancyValue = getOccupancyValue(position);
-	return !isFailedPos(position) && (occupancyValue > CELL_OCCUPATION_PROBABILITY_THRESHOLD
-			|| occupancyValue == -1);
+	return isFailedPos(position) || occupancyValue > CELL_OCCUPATION_PROBABILITY_THRESHOLD
+			|| occupancyValue == -1;
 }
 
 bool GMap::isFailedPos(Position position)

@@ -192,7 +192,7 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 		//Check if there are any obstacles and get the nearest free cell to the candidate
 		if (!gmap->isOccupied(candidatePosition) && !isExplored(candidatePosition))
-			return candidatePosition;
+			newPosition = candidatePosition;
 		else
 			newPosition = updatePosToNearestFreeCell(candidatePosition);
 
