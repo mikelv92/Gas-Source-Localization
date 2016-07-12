@@ -91,8 +91,9 @@ Position GaussianRegression::getMaxMeanPos()
 {
 	map<Position, double> meanMap;
 
-	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
-		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
+	for (float j = currentPosition.getY() + EXPLORE_Y - 1; j >= currentPosition.getY() - EXPLORE_Y; j -= STEP_SIZE)
+	{
+		for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 		{
 			Position x(i, j);
 			if (gmap->isWithinBounds(x))
@@ -101,9 +102,13 @@ Position GaussianRegression::getMaxMeanPos()
 					double m = mean(x);
 					meanMap[x] = m;
 					globalMeanMap[x] = m;
+					printf("%lf ", m);
 				}
+				else
+					printf("m ");
 		}
-
+		printf("\n");
+	}
 	Position maxMeanPos = meanMap.begin()->first;
 	double maxMean = 0;
 
@@ -122,8 +127,9 @@ Position GaussianRegression::getMaxVariancePos()
 {
 	map<Position, double> varianceMap;
 
-	for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
-		for (float j = currentPosition.getY() - EXPLORE_Y; j < currentPosition.getY() + EXPLORE_Y; j += STEP_SIZE)
+	for (float j = currentPosition.getY() + EXPLORE_Y - 1; j >= currentPosition.getY() - EXPLORE_Y; j -= STEP_SIZE)
+	{
+		for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 		{
 			Position x(i, j);
 			if (gmap->isWithinBounds(x))
@@ -131,9 +137,11 @@ Position GaussianRegression::getMaxVariancePos()
 				double v = variance(x);
 				varianceMap[x] = v;
 				globalVarianceMap[x] = v;
+				printf("%lf ", v);
 			}
 		}
-
+		printf("\n");
+	}
 	Position maxVariancePos = varianceMap.begin()->first;
 	double maxVariance = 0;
 
