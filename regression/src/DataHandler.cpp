@@ -53,7 +53,7 @@ void DataHandler::costmap_callback(const nav_msgs::OccupancyGridConstPtr& costma
             dataArray[i] = (int)costmap_msg->data[i];
 
 	gmap->init(width, height, resolution, origin_x, origin_y, dataArray);
-
+	gmap->printMap();
 	free(dataArray);
 }
 
@@ -68,6 +68,8 @@ void DataHandler::costmap_update_callback(const map_msgs::OccupancyGridUpdateCon
 	for (int j = y; j < y + height; j++)
 		for (int i = x; x < x + width; x++)
 			gmap->updateGrid(x, y, (int)costmap_update_msg->data[index++]);
+	gmap->printMap();
+
 
 }
 

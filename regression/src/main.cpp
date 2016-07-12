@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 			gaussianRegression.setCurrentPosition(currentPosition);
 
             ROS_INFO("Current position: %lf %lf", currentPosition.getX(), currentPosition.getY());
-
+            bout.computeBouts();
             double amplitude = bout.getAmplitudeAverage();
             ROS_INFO("Average Amplitude: %lf", amplitude);
 

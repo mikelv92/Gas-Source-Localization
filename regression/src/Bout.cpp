@@ -150,9 +150,9 @@ void Bout::computeBouts()
 		boutsMap[signalIndex] = bouts;
 
 		double ampsAvg = 0;
-		for (int k = 0; k < poslen; k++)
-			ampsAvg += amps[k];
-		amplitudeMap[signalIndex] = ampsAvg / poslen;
+		for (int k = 0; k < filteredAmpsSize; k++)
+			ampsAvg += amps[superThreshAmpIndexes[k]];
+		amplitudeMap[signalIndex] = ampsAvg / filteredAmpsSize;
 	}
 }
 

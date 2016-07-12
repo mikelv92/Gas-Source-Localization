@@ -18,8 +18,8 @@
 
 using namespace std;
 
-#define SMOOTH_STD 22 //In python it's 30. Check how it works with pandas.rolling_window
-#define KERNEL_LEN (int)10 * SMOOTH_STD //Needs to be odd?
+#define SMOOTH_STD 22
+#define KERNEL_LEN (int)10 * SMOOTH_STD
 #define HALF_LIFE 29
 #define DELTA_TIME 1
 #define BOUT_AMP_THRESHOLD 0

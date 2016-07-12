@@ -85,11 +85,12 @@ void GMap::updateGrid(int x, int y, int value)
 
 void GMap::printMap()
 {
+	printf("Printing costmap\n");
 	FILE * file = fopen("costMap.pgm", "w");
 
 	fprintf(file, "P2\n4000\n4000\n100\n");
 
-	for (int j = 0; j < height; j++)
+	for (int j = height - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < height; i++)
 			fprintf(file, "%d ", occupancyGrid[i][j]);
@@ -97,6 +98,7 @@ void GMap::printMap()
 	}
 
 	fclose(file);
+	printf("Finished printing costmap\n");
 }
 
 GMap::~GMap() {
