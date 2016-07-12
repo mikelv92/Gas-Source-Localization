@@ -112,8 +112,6 @@ int main(int argc, char** argv)
 
 			moveBase(newPosition);
 
-			gaussianRegression.printMeanMap();
-			gaussianRegression.printVarianceMap();
 			resetSamples(&bout, &windAvg);
 
 		}
