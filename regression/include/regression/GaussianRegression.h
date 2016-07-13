@@ -74,13 +74,11 @@ public:
 	Position nextBestPosition();
 	void setKernel(KernelFunction * kernelFunction);
 	void setGMap(GMap * gmap);
-	void printMeanMap();
-	void printVarianceMap();
 
 	void setCurrentPosition(Position position)
-	       {
-	               this->currentPosition = position;
-	       }
+	{
+		this->currentPosition = position;
+	}
 
 	~GaussianRegression();
 };

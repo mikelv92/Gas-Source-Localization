@@ -106,16 +106,13 @@ int main(int argc, char** argv)
 			gaussianRegression.setKernel(&kernelFunction);
 			gaussianRegression.addMeasurement(currentPosition, amplitude);
 
-			Position newPosition = gaussianRegression.nextBestPosition();
-            ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
-
-			while (!moveBase(newPosition))
+			Position newPosition;
+			do
 			{
-				gmap.addFailedPosition(newPosition);
-				ROS_INFO("Couldn't move base.");
 				newPosition = gaussianRegression.nextBestPosition();
+				gmap.addTriedPosition(newPosition);
 	            ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
-			}
+			} while (!moveBase(newPosition));
 
 			ROS_INFO("Base moved.");
 			resetSamples(&bout, &windAvg);

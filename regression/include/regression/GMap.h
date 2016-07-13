@@ -11,11 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
+#include <map>
 
 #include "regression/Position.h"
 
-#define CELL_OCCUPATION_PROBABILITY_THRESHOLD 45
+#define CELL_OCCUPATION_PROBABILITY_THRESHOLD 0
 
+using namespace std;
 class GMap {
 private:
 	double resolution;
@@ -26,9 +28,9 @@ private:
 
 	bool _isInit;
 	Position origin;
-	std::list<Position> failedGoals;
+	std::list<Position> triedGoals;
 
-	bool isFailedPos(Position position);
+	bool isTriedPos(Position position);
 
 
 public:
@@ -48,7 +50,9 @@ public:
 	bool isWithinBoundsY(int y);
 	bool isInitialized();
 	void printMap();
-	void addFailedPosition(Position position);
+	void printMeanMap(map<Position, double> globalMeanMap);
+	void printVarianceMap(map<Position, double> globalVarianceMap);
+	void addTriedPosition(Position position);
 	virtual ~GMap();
 
 	unsigned int getHeight() const {

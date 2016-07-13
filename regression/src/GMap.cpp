@@ -15,12 +15,12 @@ GMap::GMap()
 }
 
 void GMap::init(unsigned int width,
-				unsigned int height,
-				double resolution,
-				double origin_x,
-				double origin_y,
-				int * data
-				)
+		unsigned int height,
+		double resolution,
+		double origin_x,
+		double origin_y,
+		int * data
+)
 {
 	this->width 		= width;
 	this->height 		= height;
@@ -42,22 +42,22 @@ void GMap::init(unsigned int width,
 bool GMap::isOccupied(Position position)
 {
 	int occupancyValue = getOccupancyValue(position);
-	return isFailedPos(position) || occupancyValue > CELL_OCCUPATION_PROBABILITY_THRESHOLD
+	return isTriedPos(position) || occupancyValue > CELL_OCCUPATION_PROBABILITY_THRESHOLD
 			|| occupancyValue == -1;
 }
 
-bool GMap::isFailedPos(Position position)
+bool GMap::isTriedPos(Position position)
 {
-	for (std::list<Position>::iterator it = failedGoals.begin(); it != failedGoals.end(); it++)
+	for (std::list<Position>::iterator it = triedGoals.begin(); it != triedGoals.end(); it++)
 		if (position.equals(*it))
 			return true;
 
 	return false;
 }
 
-void GMap::addFailedPosition(Position position)
+void GMap::addTriedPosition(Position position)
 {
-	failedGoals.push_back(position);
+	triedGoals.push_back(position);
 }
 
 bool GMap::isInitialized()
@@ -85,10 +85,10 @@ bool GMap::isWithinBoundsY(int y)
 
 int GMap::getOccupancyValue(Position position)
 {
-    int offset_x 	= -origin.getX() / resolution;
-    int offset_y 	= -origin.getY() / resolution;
-    int x 			= position.getX() / resolution + offset_x;
-    int y 			= position.getX() / resolution + offset_y;
+	int offset_x 	= -origin.getX() / resolution;
+	int offset_y 	= -origin.getY() / resolution;
+	int x 			= position.getX() / resolution + offset_x;
+	int y 			= position.getX() / resolution + offset_y;
 
 	return occupancyGrid[x][y];
 }
@@ -96,6 +96,97 @@ int GMap::getOccupancyValue(Position position)
 void GMap::updateGrid(int x, int y, int value)
 {
 	occupancyGrid[x][y] = value;
+}
+
+void GMap::printMeanMap(map<Position, double> globalMeanMap)
+{
+	printf("Printing mean map...\n");
+
+	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
+	fprintf(file, "P6\n%d %d\n255\n", width, height);
+
+	bool existsInMap = false;
+
+	for (int j = width - 1; j >= 0; j--)
+	{
+		for (int i = 0; i < height; i++)
+		{
+			static unsigned char color[3];
+
+			for (map<Position, double>::iterator it = globalMeanMap.begin(); it != globalMeanMap.end(); it++)
+				if (it->first.getX() == (int)i && it->first.getY() == (int)j)
+				{
+					existsInMap = true;
+
+					color[0] = ((int)it->second * 100) % 256;  /* red */
+					color[1] = 40;  /* green */
+					color[2] = 40;  /* blue */
+					fwrite(color, 1, 3, file);
+				}
+
+			if (!existsInMap)
+			{
+				int occupancyVal = occupancyGrid[i][j];
+				color[0] = occupancyVal / 100 * 256;  /* red */
+				color[1] = occupancyVal / 100 * 256;  /* green */
+				color[2] = occupancyVal / 100 * 256;  /* blue */
+
+				fwrite(color, 1, 3, file);
+
+			}
+
+			existsInMap = false;
+
+		}
+	}
+
+	fclose(file);
+	printf("Done.\n");
+
+
+}
+
+void GMap::printVarianceMap(map<Position, double> globalVarianceMap)
+{
+	printf("Printing variance map...\n");
+
+	FILE * file = fopen("varianceMap.ppm", "wb"); /* b - binary mode */
+	fprintf(file, "P6\n%d %d\n255\n", width, height);
+
+	bool existsInMap = false;
+
+	for (int j = height - 1; j >= 0; j--)
+	{
+		for (int i = 0; i < width; i++)
+		{
+			static unsigned char color[3];
+
+			for (map<Position, double>::iterator it = globalVarianceMap.begin(); it != globalVarianceMap.end(); it++)
+				if (it->first.getX() == i && it->first.getY() == j)
+				{
+					existsInMap = true;
+
+					color[0] = ((int)it->second * 100) % 256;  /* red */
+					color[1] = 40;  /* green */
+					color[2] = 40;  /* blue */
+					fwrite(color, 1, 3, file);
+				}
+			if (!existsInMap)
+			{
+				int occupancyVal = occupancyGrid[i][j];
+				color[0] = occupancyVal / 100 * 256;  /* red */
+				color[1] = occupancyVal / 100 * 256;  /* green */
+				color[2] = occupancyVal / 100 * 256;  /* blue */
+
+				fwrite(color, 1, 3, file);
+			}
+			existsInMap = false;
+		}
+	}
+
+	fclose(file);
+	printf("Done.\n");
+
 }
 
 void GMap::printMap()

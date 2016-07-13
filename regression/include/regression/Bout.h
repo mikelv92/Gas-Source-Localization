@@ -19,7 +19,7 @@
 using namespace std;
 
 #define SMOOTH_STD 22
-#define KERNEL_LEN (int)10 * SMOOTH_STD
+#define KERNEL_LEN (int)2 * SMOOTH_STD // 10 * ...
 #define HALF_LIFE 29
 #define DELTA_TIME 1
 #define BOUT_AMP_THRESHOLD 0
@@ -29,7 +29,7 @@ enum SignalIndex { PID, S1, S2, S3, S4, S5, S6, NUM_SIGNALS};
 
 class Bout {
 public:
-	const static int SIGNAL_LEN = 10000;
+	const static int SIGNAL_LEN = 1000; //10000
 
 	Bout();
 	void computeBouts();

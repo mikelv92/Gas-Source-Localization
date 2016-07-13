@@ -178,8 +178,8 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 
 	if (alpha < ALPHA_THRESHOLD)
 	{
-		printMeanMap();
-		printVarianceMap();
+		gmap->printMeanMap(globalMeanMap);
+		gmap->printVarianceMap(globalVarianceMap);
 		return finalPosition();
 	}
 	else
@@ -253,113 +253,6 @@ void GaussianRegression::setKernel(KernelFunction * kernelFunction)
 void GaussianRegression::setGMap(GMap * gmap)
 {
 	this->gmap = gmap;
-}
-
-void GaussianRegression::printMeanMap()
-{
-	printf("Printing mean map...\n");
-
-	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
-	fprintf(file, "P6\n%d %d\n255\n", gmap->getWidth(), gmap->getHeight());
-
-	bool existsInMap = false;
-
-	for (int j = gmap->getHeight() - 1; j >= 0; j--)
-	{
-		for (int i = 0; i < gmap->getWidth(); i++)
-		{
-			static unsigned char color[3];
-
-			for (map<Position, double>::iterator it = globalMeanMap.begin(); it != globalMeanMap.end(); it++)
-				if (it->first.getX() == i && it->first.getY() == j)
-				{
-					existsInMap = true;
-
-					color[0] = ((int)it->second * 100) % 256;  /* red */
-					color[1] = 40;  /* green */
-					color[2] = 40;  /* blue */
-					fwrite(color, 1, 3, file);
-				}
-
-			if (!existsInMap)
-			{
-				int occupancyVal = gmap->getOccupancyValue(Position(i, j));
-				if (occupancyVal == -1)
-				{
-					color[0] = 0;  /* red */
-					color[1] = 0;  /* green */
-					color[2] = 0;  /* blue */
-				}
-				else
-				{
-					color[0] = occupancyVal / 100 * 256;  /* red */
-					color[1] = occupancyVal / 100 * 256;  /* green */
-					color[2] = occupancyVal / 100 * 256;  /* blue */
-				}
-
-				fwrite(color, 1, 3, file);
-
-			}
-
-			existsInMap = false;
-
-		}
-	}
-
-	fclose(file);
-	printf("Done.\n");
-
-}
-
-void GaussianRegression::printVarianceMap()
-{
-	printf("Printing variance map...\n");
-
-	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
-	fprintf(file, "P6\n%d %d\n255\n", gmap->getWidth(), gmap->getHeight());
-
-	bool existsInMap = false;
-
-	for (int j = gmap->getHeight() - 1; j >= 0; j--)
-	{
-		for (int i = 0; i < gmap->getWidth(); i++)
-		{
-			static unsigned char color[3];
-
-			for (map<Position, double>::iterator it = globalVarianceMap.begin(); it != globalVarianceMap.end(); it++)
-				if (it->first.getX() == i && it->first.getY() == j)
-				{
-					existsInMap = true;
-
-					color[0] = ((int)it->second * 100) % 256;  /* red */
-					color[1] = 40;  /* green */
-					color[2] = 40;  /* blue */
-					fwrite(color, 1, 3, file);
-				}
-			if (!existsInMap)
-			{
-				int occupancyVal = gmap->getOccupancyValue(Position(i, j));
-				if (occupancyVal == -1)
-				{
-					color[0] = 0;  /* red */
-					color[1] = 0;  /* green */
-					color[2] = 0;  /* blue */
-				}
-				else
-				{
-					color[0] = occupancyVal / 100 * 256;  /* red */
-					color[1] = occupancyVal / 100 * 256;  /* green */
-					color[2] = occupancyVal / 100 * 256;  /* blue */
-				}
-
-				fwrite(color, 1, 3, file);
-			}
-			existsInMap = false;
-		}
-	}
-
-	fclose(file);
-	printf("Done.\n");
 }
 
 Position GaussianRegression::finalPosition()
