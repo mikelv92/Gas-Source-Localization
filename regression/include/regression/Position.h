@@ -58,13 +58,13 @@ public:
 
 	bool equals(Position pos)
 	{
-		return this->x == pos.getX() && this->y == pos.getY();
+		return (int)this->x == (int)pos.getX() && (int)this->y == (int)pos.getY();
 	}
 
 	inline bool operator<(const Position & pos) const
 	{
-		return this->getX() < pos.getX() ||
-				(this->getX() == pos.getX() && this->getY() < pos.getY());
+		return (int)this->getX() < (int)pos.getX() ||
+				((int)this->getX() == (int)pos.getX() && (int)this->getY() < (int)pos.getY());
 	}
 
 	float getOrientation() const {

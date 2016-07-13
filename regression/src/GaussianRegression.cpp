@@ -92,7 +92,6 @@ Position GaussianRegression::getMaxMeanPos()
 	map<Position, double> meanMap;
 
 	for (float j = currentPosition.getY() + EXPLORE_Y - 1; j >= currentPosition.getY() - EXPLORE_Y; j -= STEP_SIZE)
-	{
 		for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 		{
 			Position x(i, j);
@@ -102,13 +101,8 @@ Position GaussianRegression::getMaxMeanPos()
 					double m = mean(x);
 					meanMap[x] = m;
 					globalMeanMap[x] = m;
-					printf("%lf ", m);
 				}
-				else
-					printf("m ");
 		}
-		printf("\n");
-	}
 	Position maxMeanPos = meanMap.begin()->first;
 	double maxMean = 0;
 
@@ -128,7 +122,6 @@ Position GaussianRegression::getMaxVariancePos()
 	map<Position, double> varianceMap;
 
 	for (float j = currentPosition.getY() + EXPLORE_Y - 1; j >= currentPosition.getY() - EXPLORE_Y; j -= STEP_SIZE)
-	{
 		for (float i = currentPosition.getX() - EXPLORE_X; i < currentPosition.getX() + EXPLORE_X; i += STEP_SIZE)
 		{
 			Position x(i, j);
@@ -137,11 +130,8 @@ Position GaussianRegression::getMaxVariancePos()
 				double v = variance(x);
 				varianceMap[x] = v;
 				globalVarianceMap[x] = v;
-				printf("%lf ", v);
 			}
 		}
-		printf("\n");
-	}
 	Position maxVariancePos = varianceMap.begin()->first;
 	double maxVariance = 0;
 
@@ -268,9 +258,9 @@ void GaussianRegression::setGMap(GMap * gmap)
 void GaussianRegression::printMeanMap()
 {
 	printf("Printing mean map...\n");
-	FILE * file = fopen("meanMap.pgm", "w");
 
-	fprintf(file, "P2\n%d\n%d\n100\n", gmap->getWidth(), gmap->getHeight());
+	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
+	fprintf(file, "P6\n%d %d\n255\n", gmap->getWidth(), gmap->getHeight());
 
 	bool existsInMap = false;
 
@@ -278,16 +268,42 @@ void GaussianRegression::printMeanMap()
 	{
 		for (int i = 0; i < gmap->getWidth(); i++)
 		{
+			static unsigned char color[3];
+
 			for (map<Position, double>::iterator it = globalMeanMap.begin(); it != globalMeanMap.end(); it++)
 				if (it->first.getX() == i && it->first.getY() == j)
 				{
 					existsInMap = true;
-					fprintf(file, "%lf ", it->second);
+
+					color[0] = ((int)it->second * 100) % 256;  /* red */
+					color[1] = 40;  /* green */
+					color[2] = 40;  /* blue */
+					fwrite(color, 1, 3, file);
 				}
+
 			if (!existsInMap)
-				fprintf(file, "-1 ");
+			{
+				int occupancyVal = gmap->getOccupancyValue(Position(i, j));
+				if (occupancyVal == -1)
+				{
+					color[0] = 0;  /* red */
+					color[1] = 0;  /* green */
+					color[2] = 0;  /* blue */
+				}
+				else
+				{
+					color[0] = occupancyVal / 100 * 256;  /* red */
+					color[1] = occupancyVal / 100 * 256;  /* green */
+					color[2] = occupancyVal / 100 * 256;  /* blue */
+				}
+
+				fwrite(color, 1, 3, file);
+
+			}
+
+			existsInMap = false;
+
 		}
-		fprintf(file, "\n");
 	}
 
 	fclose(file);
@@ -298,9 +314,9 @@ void GaussianRegression::printMeanMap()
 void GaussianRegression::printVarianceMap()
 {
 	printf("Printing variance map...\n");
-	FILE * file = fopen("varianceMap.pgm", "w");
 
-	fprintf(file, "P2\n%d\n%d\n100\n", gmap->getWidth(), gmap->getHeight());
+	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
+	fprintf(file, "P6\n%d %d\n255\n", gmap->getWidth(), gmap->getHeight());
 
 	bool existsInMap = false;
 
@@ -308,16 +324,38 @@ void GaussianRegression::printVarianceMap()
 	{
 		for (int i = 0; i < gmap->getWidth(); i++)
 		{
+			static unsigned char color[3];
+
 			for (map<Position, double>::iterator it = globalVarianceMap.begin(); it != globalVarianceMap.end(); it++)
 				if (it->first.getX() == i && it->first.getY() == j)
 				{
 					existsInMap = true;
-					fprintf(file, "%lf ", it->second);
+
+					color[0] = ((int)it->second * 100) % 256;  /* red */
+					color[1] = 40;  /* green */
+					color[2] = 40;  /* blue */
+					fwrite(color, 1, 3, file);
 				}
 			if (!existsInMap)
-				fprintf(file, "-1 ");
+			{
+				int occupancyVal = gmap->getOccupancyValue(Position(i, j));
+				if (occupancyVal == -1)
+				{
+					color[0] = 0;  /* red */
+					color[1] = 0;  /* green */
+					color[2] = 0;  /* blue */
+				}
+				else
+				{
+					color[0] = occupancyVal / 100 * 256;  /* red */
+					color[1] = occupancyVal / 100 * 256;  /* green */
+					color[2] = occupancyVal / 100 * 256;  /* blue */
+				}
+
+				fwrite(color, 1, 3, file);
+			}
+			existsInMap = false;
 		}
-		fprintf(file, "\n");
 	}
 
 	fclose(file);
