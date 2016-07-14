@@ -98,20 +98,20 @@ void GMap::updateGrid(int x, int y, int value)
 	occupancyGrid[x][y] = value;
 }
 
-void GMap::printMeanMap(map<Position, double> globalMeanMap)
+void GMap::printMeanMap(map<Position, double> globalMeanMap, list<Position> sensingPositions)
 {
 	printf("Printing mean map...\n");
 
 	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
 	fprintf(file, "P6\n%d %d\n255\n", width, height);
 
-	bool existsInMap = false;
-
 	for (int j = width - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < height; i++)
 		{
 			static unsigned char color[3];
+
+			bool existsInMap = false;
 
 			for (map<Position, double>::iterator it = globalMeanMap.begin(); it != globalMeanMap.end(); it++)
 			{
@@ -127,10 +127,27 @@ void GMap::printMeanMap(map<Position, double> globalMeanMap)
 				{
 					existsInMap = true;
 
-					color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
-					color[1] = 0;  /* green */
-					color[2] = 0;  /* blue */
+					bool isSensingPos = false;
+
+					for (list<Position>::iterator s = sensingPositions.begin(); s != sensingPositions.end(); s++)
+						if ((it->first).equals(*s))
+							isSensingPos = true;
+
+					if (isSensingPos)
+					{
+						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
+						color[1] = 0;  /* green */
+						color[2] = 0;  /* blue */
+					}
+					else
+					{
+						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
+						color[1] = 255;  /* green */
+						color[2] = 255;  /* blue */
+					}
+
 					fwrite(color, 1, 3, file);
+
 				}
 			}
 			if (!existsInMap)
@@ -144,7 +161,6 @@ void GMap::printMeanMap(map<Position, double> globalMeanMap)
 
 			}
 
-			existsInMap = false;
 
 		}
 	}
@@ -155,20 +171,20 @@ void GMap::printMeanMap(map<Position, double> globalMeanMap)
 
 }
 
-void GMap::printVarianceMap(map<Position, double> globalVarianceMap)
+void GMap::printVarianceMap(map<Position, double> globalVarianceMap, list<Position> sensingPositions)
 {
 	printf("Printing variance map...\n");
 
 	FILE * file = fopen("varianceMap.ppm", "wb"); /* b - binary mode */
 	fprintf(file, "P6\n%d %d\n255\n", width, height);
 
-	bool existsInMap = false;
-
 	for (int j = height - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < width; i++)
 		{
 			static unsigned char color[3];
+
+			bool existsInMap = false;
 
 			for (map<Position, double>::iterator it = globalVarianceMap.begin(); it != globalVarianceMap.end(); it++)
 			{
@@ -184,10 +200,27 @@ void GMap::printVarianceMap(map<Position, double> globalVarianceMap)
 				{
 					existsInMap = true;
 
-					color[0] = 0;  /* red */
-					color[1] = floor(it->second * 255);  /* green */
-					color[2] = 0;  /* blue */
+					bool isSensingPos = false;
+
+					for (list<Position>::iterator s = sensingPositions.begin(); s != sensingPositions.end(); s++)
+						if ((it->first).equals(*s))
+							isSensingPos = true;
+
+					if (isSensingPos)
+					{
+						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
+						color[1] = 0;  /* green */
+						color[2] = 0;  /* blue */
+					}
+					else
+					{
+						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
+						color[1] = 255;  /* green */
+						color[2] = 255;  /* blue */
+					}
+
 					fwrite(color, 1, 3, file);
+
 				}
 			}
 			if (!existsInMap)
@@ -199,7 +232,6 @@ void GMap::printVarianceMap(map<Position, double> globalVarianceMap)
 
 				fwrite(color, 1, 3, file);
 			}
-			existsInMap = false;
 		}
 	}
 

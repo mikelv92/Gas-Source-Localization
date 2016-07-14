@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-#define WIND_R_SIGNAL_LEN 100 //500
+#define WIND_R_SIGNAL_LEN 500 //500
 
 class WindAvg {
 private:

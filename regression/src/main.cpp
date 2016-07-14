@@ -109,6 +109,13 @@ int main(int argc, char** argv)
 			do
 			{
 				newPosition = gaussianRegression.nextBestPosition();
+
+				if (newPosition.isFinalPos())
+				{
+					ROS_INFO("FINAL POSITION: %.2f %.2f", newPosition.getX(), newPosition.getY());
+					ros::shutdown();
+				}
+
 				gmap.addTriedPosition(newPosition);
 	            ROS_INFO("Next best position: %.2f %.2f", newPosition.getX(), newPosition.getY());
 				resetSamples(&bout, &windAvg);

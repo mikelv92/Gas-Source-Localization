@@ -16,6 +16,7 @@ private:
 	float y; // in meters
 	float orientation; // in radians
 	bool nullPos; // is this a real position or not?
+	bool finalPos;
 public:
 	Position() {};
 	Position(float x, float y) {
@@ -24,6 +25,7 @@ public:
 		this->y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
 		this->orientation = 0;
 		this->nullPos = false;
+		this->finalPos = false;
 	}
 
 	Position(bool nullPos) {
@@ -56,7 +58,7 @@ public:
 		return Position(this->getX() - pos.getX(), this->getY() - pos.getY());
 	}
 
-	bool equals(Position pos)
+	bool equals(Position pos) const
 	{
 		return (int)this->x == (int)pos.getX() && (int)this->y == (int)pos.getY();
 	}
@@ -81,6 +83,14 @@ public:
 
 	void setNullPos(bool nullPos) {
 		this->nullPos = nullPos;
+	}
+
+	bool isFinalPos() const {
+		return finalPos;
+	}
+
+	void setFinalPos(bool finalPos) {
+		this->finalPos = finalPos;
 	}
 };
 

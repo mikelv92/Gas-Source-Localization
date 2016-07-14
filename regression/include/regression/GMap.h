@@ -50,8 +50,8 @@ public:
 	bool isWithinBoundsY(int y);
 	bool isInitialized();
 	void printMap();
-	void printMeanMap(map<Position, double> globalMeanMap);
-	void printVarianceMap(map<Position, double> globalVarianceMap);
+	void printMeanMap(map<Position, double> globalMeanMap, list<Position> sensingPositions);
+	void printVarianceMap(map<Position, double> globalVarianceMap, list<Position> sensingPositions);
 	void addTriedPosition(Position position);
 	virtual ~GMap();
 

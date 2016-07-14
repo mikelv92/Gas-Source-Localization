@@ -174,12 +174,12 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	float new_pos_x = old_x + RHO * cos(angle);
 	float new_pos_y = old_y + RHO * sin(angle);
 
-	alpha *= 0.99;
+	alpha *= 0.89;
 
 	if (alpha < ALPHA_THRESHOLD)
 	{
-		gmap->printMeanMap(globalMeanMap);
-		gmap->printVarianceMap(globalVarianceMap);
+		gmap->printMeanMap(globalMeanMap, X);
+		gmap->printVarianceMap(globalVarianceMap, X);
 		return finalPosition();
 	}
 	else
@@ -265,9 +265,15 @@ Position GaussianRegression::finalPosition()
 			maxPos 	= it->first;
 			max 	= it->second;
 		}
+
+	maxPos.setFinalPos(true);
 	return maxPos;
 }
 
+
+/*
+ * Used to compute integrals... Aren't used in the program for now...
+ */
 double GaussianRegression::meanDirGaussF(double theta)
 {
 	return exp((-1 * (theta - meanAngle) * (theta - meanAngle)) / (MEAN_GAUSS_VARIANCE * MEAN_GAUSS_VARIANCE));
