@@ -88,7 +88,7 @@ int GMap::getOccupancyValue(Position position)
 	int offset_x 	= -origin.getX() / resolution;
 	int offset_y 	= -origin.getY() / resolution;
 	int x 			= position.getX() / resolution + offset_x;
-	int y 			= position.getX() / resolution + offset_y;
+	int y 			= position.getY() / resolution + offset_y;
 
 	return occupancyGrid[x][y];
 }
@@ -114,16 +114,25 @@ void GMap::printMeanMap(map<Position, double> globalMeanMap)
 			static unsigned char color[3];
 
 			for (map<Position, double>::iterator it = globalMeanMap.begin(); it != globalMeanMap.end(); it++)
-				if (it->first.getX() == (int)i && it->first.getY() == (int)j)
+			{
+				int offset_x 	= -origin.getX() / resolution;
+				int offset_y 	= -origin.getY() / resolution;
+				int low_x		= (it->first.getX() - 0.5) / resolution + offset_x;
+				int low_y		= (it->first.getY() - 0.5) / resolution + offset_y;
+				int high_x 		= (it->first.getX() + 0.5) / resolution + offset_x;
+				int high_y 		= (it->first.getY() + 0.5) / resolution + offset_y;
+
+				if (i > low_x && i < high_x
+						&& j > low_y && j < high_y)
 				{
 					existsInMap = true;
 
-					color[0] = ((int)it->second * 100) % 256;  /* red */
-					color[1] = 40;  /* green */
-					color[2] = 40;  /* blue */
+					color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
+					color[1] = 0;  /* green */
+					color[2] = 0;  /* blue */
 					fwrite(color, 1, 3, file);
 				}
-
+			}
 			if (!existsInMap)
 			{
 				int occupancyVal = occupancyGrid[i][j];
@@ -162,15 +171,25 @@ void GMap::printVarianceMap(map<Position, double> globalVarianceMap)
 			static unsigned char color[3];
 
 			for (map<Position, double>::iterator it = globalVarianceMap.begin(); it != globalVarianceMap.end(); it++)
-				if (it->first.getX() == i && it->first.getY() == j)
+			{
+				int offset_x 	= -origin.getX() / resolution;
+				int offset_y 	= -origin.getY() / resolution;
+				int low_x		= (it->first.getX() - 0.5) / resolution + offset_x;
+				int low_y		= (it->first.getY() - 0.5) / resolution + offset_y;
+				int high_x 		= (it->first.getX() + 0.5) / resolution + offset_x;
+				int high_y 		= (it->first.getY() + 0.5) / resolution + offset_y;
+
+				if (i > low_x && i < high_x
+						&& j > low_y && j < high_y)
 				{
 					existsInMap = true;
 
-					color[0] = ((int)it->second * 100) % 256;  /* red */
-					color[1] = 40;  /* green */
-					color[2] = 40;  /* blue */
+					color[0] = 0;  /* red */
+					color[1] = floor(it->second * 255);  /* green */
+					color[2] = 0;  /* blue */
 					fwrite(color, 1, 3, file);
 				}
+			}
 			if (!existsInMap)
 			{
 				int occupancyVal = occupancyGrid[i][j];
@@ -191,8 +210,8 @@ void GMap::printVarianceMap(map<Position, double> globalVarianceMap)
 
 void GMap::printMap()
 {
-	printf("Printing costmap\n");
-	FILE * file = fopen("costMap.pgm", "w");
+	printf("Printing costmap...\n");
+	FILE * file = fopen("costmap.pgm", "w");
 
 	fprintf(file, "P2\n4000\n4000\n100\n");
 

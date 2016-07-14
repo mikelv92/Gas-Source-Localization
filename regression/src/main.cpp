@@ -94,10 +94,9 @@ int main(int argc, char** argv)
 			currentPosition = datahandler.getCurrentPosition();
 			gaussianRegression.setCurrentPosition(currentPosition);
 
-            ROS_INFO("Current position: %lf %lf", currentPosition.getX(), currentPosition.getY());
+            ROS_INFO("Current position: %.2f %.2f", currentPosition.getX(), currentPosition.getY());
             bout.computeBouts();
             double amplitude = bout.getAmplitudeAverage();
-            ROS_INFO("Average Amplitude: %lf", amplitude);
 
 			double windDirection = windAvg.getDirectionAverage();
 			Wind w = Wind(windAvg.getSpeedAverage(), -windDirection + currentPosition.getOrientation());
@@ -111,11 +110,11 @@ int main(int argc, char** argv)
 			{
 				newPosition = gaussianRegression.nextBestPosition();
 				gmap.addTriedPosition(newPosition);
-	            ROS_INFO("Next best position: %lf %lf", newPosition.getX(), newPosition.getY());
+	            ROS_INFO("Next best position: %.2f %.2f", newPosition.getX(), newPosition.getY());
+				resetSamples(&bout, &windAvg);
 			} while (!moveBase(newPosition));
 
 			ROS_INFO("Base moved.");
-			resetSamples(&bout, &windAvg);
 		}
 
 		ros::spinOnce();
