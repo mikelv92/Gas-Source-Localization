@@ -21,11 +21,17 @@ public:
 	Position() {};
 	Position(float x, float y) {
 		// Round
-		this->x = x > 0 ? floor(x + 0.5) : ceil(x - 0.5);
-		this->y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
+		this->x = roundf(x * 10) / 10;
+		this->y = roundf(y * 10) / 10;
 		this->orientation = 0;
 		this->nullPos = false;
 		this->finalPos = false;
+	}
+
+	void round()
+	{
+		x = x > 0 ? floor(x + 0.5) : ceil(x - 0.5);
+		y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
 	}
 
 	Position(bool nullPos) {
@@ -42,7 +48,7 @@ public:
 	}
 
 	void setX(float x) {
-		this->x = x > 0 ? floor(x + 0.5) : ceil(x - 0.5);
+		this->x = x;
 	}
 
 	float getY() const {
@@ -50,7 +56,7 @@ public:
 	}
 
 	void setY(float y) {
-		this->y = y > 0 ? floor(y + 0.5) : ceil(y - 0.5);
+		this->y = y;
 	}
 
 	Position diff(Position pos)
@@ -60,13 +66,13 @@ public:
 
 	bool equals(Position pos) const
 	{
-		return (int)this->x == (int)pos.getX() && (int)this->y == (int)pos.getY();
+		return this->x == pos.getX() && this->y == pos.getY();
 	}
 
 	inline bool operator<(const Position & pos) const
 	{
-		return (int)this->getX() < (int)pos.getX() ||
-				((int)this->getX() == (int)pos.getX() && (int)this->getY() < (int)pos.getY());
+		return this->getX() < pos.getX() ||
+				(this->getX() == pos.getX() && this->getY() < pos.getY());
 	}
 
 	float getOrientation() const {

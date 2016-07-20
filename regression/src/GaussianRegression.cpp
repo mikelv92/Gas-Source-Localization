@@ -174,8 +174,6 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	float new_pos_x = old_x + RHO * cos(angle);
 	float new_pos_y = old_y + RHO * sin(angle);
 
-	alpha *= 0.89;
-
 	if (alpha < ALPHA_THRESHOLD)
 	{
 		gmap->printMeanMap(globalMeanMap, X);
@@ -186,6 +184,7 @@ Position GaussianRegression::updateCurrentPosition(Position meanPos, Position va
 	{
 
 		Position candidatePosition(new_pos_x, new_pos_y);
+		candidatePosition.round();
 		Position newPosition(0, 0);
 
 		//Check if there are any obstacles and get the nearest free cell to the candidate
@@ -212,23 +211,15 @@ Position GaussianRegression::updatePosToNearestFreeCell(Position position)
 	printf("Chosen position occupancy value: %d %d %d\n", x, y, gmap->getOccupancyValue(position));
 
 	for (int k = 1; gmap->isWithinBoundsX(x + k) || gmap->isWithinBoundsY(y + k); k++)
-		for (int i = -k; i <= k; i += k)
+		for (int i = -k; i <= k; i ++)
 		{
 			if (gmap->isWithinBoundsX(x + i))
 				position.setX(x + i);
 
-			for (int j = -k; j <= k; j += k)
+			for (int j = -k; j <= k; j ++)
 			{
 				if (gmap->isWithinBoundsY(y + j))
 					position.setY(y + j);
-
-				printf("x,y,k, occupancy val, is explored, is occupied:%lf %lf %d: %d %c, %c\n",
-						position.getX(),
-						position.getY(),
-						k,
-						gmap->getOccupancyValue(position),
-						isExplored(position) ? 'e' : 'f',
-								gmap->isOccupied(position) ? 'o' : 'f');
 
 				if (!gmap->isOccupied(position) && !isExplored(position))
 					return position;

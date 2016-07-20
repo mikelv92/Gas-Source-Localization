@@ -15,7 +15,7 @@
 
 #include "regression/Position.h"
 
-#define CELL_OCCUPATION_PROBABILITY_THRESHOLD 0
+#define CELL_OCCUPATION_PROBABILITY_THRESHOLD 35
 
 using namespace std;
 class GMap {

@@ -24,14 +24,13 @@
 #include <map>
 
 #define SIGMA_N 2
-#define ENV_X 10
-#define ENV_Y 5
-#define STEP_SIZE 1
-#define INIT_ALPHA 1
-#define RHO 2.0
+#define STEP_SIZE 0.1
+#define RHO 3
 #define MEAN_GAUSS_VARIANCE 2.0
 #define VAR_GAUSS_VARIANCE 2.0
+#define INIT_ALPHA 1
 #define ALPHA_THRESHOLD 0.1
+#define ALPHA_MUL 0.89
 #define EXPLORE_X 5
 #define EXPLORE_Y 5
 
@@ -74,6 +73,11 @@ public:
 	Position nextBestPosition();
 	void setKernel(KernelFunction * kernelFunction);
 	void setGMap(GMap * gmap);
+
+	void updateAlpha()
+	{
+		alpha *= ALPHA_MUL;
+	}
 
 	void setCurrentPosition(Position position)
 	{

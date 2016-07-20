@@ -102,12 +102,11 @@ void GMap::printMeanMap(map<Position, double> globalMeanMap, list<Position> sens
 {
 	printf("Printing mean map...\n");
 
-	FILE * file = fopen("meanMap.ppm", "wb"); /* b - binary mode */
-	fprintf(file, "P6\n%d %d\n255\n", width, height);
+	FILE * file = fopen("meanMap.csv", "w");
 
-	for (int j = width - 1; j >= 0; j--)
+	for (int j = height - 1; j >= 0; j--)
 	{
-		for (int i = 0; i < height; i++)
+		for (int i = 0; i < width; i++)
 		{
 			static unsigned char color[3];
 
@@ -117,52 +116,25 @@ void GMap::printMeanMap(map<Position, double> globalMeanMap, list<Position> sens
 			{
 				int offset_x 	= -origin.getX() / resolution;
 				int offset_y 	= -origin.getY() / resolution;
-				int low_x		= (it->first.getX() - 0.5) / resolution + offset_x;
-				int low_y		= (it->first.getY() - 0.5) / resolution + offset_y;
-				int high_x 		= (it->first.getX() + 0.5) / resolution + offset_x;
-				int high_y 		= (it->first.getY() + 0.5) / resolution + offset_y;
+				int low_x		= (it->first.getX() - 0.05) / resolution + offset_x;
+				int low_y		= (it->first.getY() - 0.05) / resolution + offset_y;
+				int high_x 		= (it->first.getX() + 0.05) / resolution + offset_x;
+				int high_y 		= (it->first.getY() + 0.05) / resolution + offset_y;
 
-				if (i > low_x && i < high_x
-						&& j > low_y && j < high_y)
+				if (i >= low_x && i < high_x
+						&& j >= low_y && j < high_y)
 				{
 					existsInMap = true;
 
-					bool isSensingPos = false;
-
-					for (list<Position>::iterator s = sensingPositions.begin(); s != sensingPositions.end(); s++)
-						if ((it->first).equals(*s))
-							isSensingPos = true;
-
-					if (isSensingPos)
-					{
-						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
-						color[1] = 0;  /* green */
-						color[2] = 0;  /* blue */
-					}
-					else
-					{
-						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
-						color[1] = 255;  /* green */
-						color[2] = 255;  /* blue */
-					}
-
-					fwrite(color, 1, 3, file);
-
+					fprintf(file, "%lf, ", it->second);
 				}
 			}
 			if (!existsInMap)
-			{
-				int occupancyVal = occupancyGrid[i][j];
-				color[0] = occupancyVal / 100 * 256;  /* red */
-				color[1] = occupancyVal / 100 * 256;  /* green */
-				color[2] = occupancyVal / 100 * 256;  /* blue */
-
-				fwrite(color, 1, 3, file);
-
-			}
+				fprintf(file, "0, ");
 
 
 		}
+		fprintf(file, "\n");
 	}
 
 	fclose(file);
@@ -175,8 +147,7 @@ void GMap::printVarianceMap(map<Position, double> globalVarianceMap, list<Positi
 {
 	printf("Printing variance map...\n");
 
-	FILE * file = fopen("varianceMap.ppm", "wb"); /* b - binary mode */
-	fprintf(file, "P6\n%d %d\n255\n", width, height);
+	FILE * file = fopen("varianceMap.csv", "w");
 
 	for (int j = height - 1; j >= 0; j--)
 	{
@@ -190,49 +161,24 @@ void GMap::printVarianceMap(map<Position, double> globalVarianceMap, list<Positi
 			{
 				int offset_x 	= -origin.getX() / resolution;
 				int offset_y 	= -origin.getY() / resolution;
-				int low_x		= (it->first.getX() - 0.5) / resolution + offset_x;
-				int low_y		= (it->first.getY() - 0.5) / resolution + offset_y;
-				int high_x 		= (it->first.getX() + 0.5) / resolution + offset_x;
-				int high_y 		= (it->first.getY() + 0.5) / resolution + offset_y;
+				int low_x		= (it->first.getX() - 0.05) / resolution + offset_x;
+				int low_y		= (it->first.getY() - 0.05) / resolution + offset_y;
+				int high_x 		= (it->first.getX() + 0.05) / resolution + offset_x;
+				int high_y 		= (it->first.getY() + 0.05) / resolution + offset_y;
 
-				if (i > low_x && i < high_x
-						&& j > low_y && j < high_y)
+				if (i >= low_x && i < high_x
+						&& j >= low_y && j < high_y)
 				{
+
 					existsInMap = true;
 
-					bool isSensingPos = false;
-
-					for (list<Position>::iterator s = sensingPositions.begin(); s != sensingPositions.end(); s++)
-						if ((it->first).equals(*s))
-							isSensingPos = true;
-
-					if (isSensingPos)
-					{
-						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
-						color[1] = 0;  /* green */
-						color[2] = 0;  /* blue */
-					}
-					else
-					{
-						color[0] = (it->second / 0.0008) > 255 ? 255 : floor(it->second / 0.0008);  /* red */
-						color[1] = 255;  /* green */
-						color[2] = 255;  /* blue */
-					}
-
-					fwrite(color, 1, 3, file);
-
+					fprintf(file, "%lf, ", it->second);
 				}
 			}
 			if (!existsInMap)
-			{
-				int occupancyVal = occupancyGrid[i][j];
-				color[0] = occupancyVal / 100 * 256;  /* red */
-				color[1] = occupancyVal / 100 * 256;  /* green */
-				color[2] = occupancyVal / 100 * 256;  /* blue */
-
-				fwrite(color, 1, 3, file);
-			}
+				fprintf(file, "0, ");
 		}
+		fprintf(file, "\n");
 	}
 
 	fclose(file);

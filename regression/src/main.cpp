@@ -92,6 +92,7 @@ int main(int argc, char** argv)
 			)
 		{
 			currentPosition = datahandler.getCurrentPosition();
+			currentPosition.round();
 			gaussianRegression.setCurrentPosition(currentPosition);
 
             ROS_INFO("Current position: %.2f %.2f", currentPosition.getX(), currentPosition.getY());
@@ -122,6 +123,7 @@ int main(int argc, char** argv)
 			} while (!moveBase(newPosition));
 
 			ROS_INFO("Base moved.");
+			gaussianRegression.updateAlpha();
 		}
 
 		ros::spinOnce();
